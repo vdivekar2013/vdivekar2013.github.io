@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Hello World</title>
+<script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+</head>
+<body>
+	<h1>Hello, World</h1>
+	<script type="text/javascript">
+	function logResults(json){ 
+		console.log(JSON.stringify(json)); 
+		alert(JSON.stringify(json));
+	};
+	alert('i am here');
+	$.ajax({ url:"https://www.google.com/finance/info?q=bom:500672",
+			 dataType: "jsonp",
+			 jsonpCallback: "logResults"});
+	</script>
+</body>
+</html>

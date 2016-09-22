@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Aulio</title>
+
+<link href="MetroJs.css" rel="stylesheet">
+
+
+<script type="text/javascript" data-main="main" src="./require.js"></script>
+<script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+<script src="MetroJs.js"></script>
+<script type="text/javascript" src="speakGenerator.js"></script>
+<script type="text/javascript" src="speakClient.js"></script>
+</head>
+<body>
+	<div id="audio"></div>
+	<div id="group" class="tile-strip two-wide cyan">
+		<div>
+			<button id="add">Add</button>
+		</div>
+	</div>
+	<div id="input" class="tile-strip one-wide cyan">
+		<form id="addForm">
+			Id:<br> <input type="text" id="id"><br> Name:<br>
+			<input type="text" id="name"> Low Limit:<br> <input
+				type="text" id="loLimit"> High Limit:<br> <input
+				type="text" id="hiLimit">
+			<button type="button" id="addButton">Add</button>
+			<button type="button" id="exitButton">Exit</button>
+		</form>
+	</div>
+	<script>
+		var marketdata;
+		function logResults (json){ 
+			console.log(JSON.stringify(json)); 
+			marketdata = json;
+		}
+		function market(InstrumentStore) {
+			var array = InstrumentStore.getArray();
+			var url = "https://www.google.com/finance/info?q=";
+			for(var i = 0; i < array.length; i++)
+				url = url.concat(array[i].id + ',');
+			$.ajax({ url: url, 
+					 dataType: "jsonp",
+					 async: false,
+					 jsonpCallback: "logResults"
+				});
+		}
+		function loadInstruments(InstrumentStore) {
+			var data = marketdata;
+			var array = InstrumentStore.getArray();
+			if(data != undefined && data instanceof Array) {
+				for(var i=0; i < data.length; i++) {
+					var id = data[i].e.concat(':').concat(data[i].t);
+					console.log('id = ' + id);
+					for(var j=0; j < array.length; j++) {
+						if(array[j].id.toUpperCase() == id.toUpperCase()) {
+							array[j].value = data[i].l_fix;
+							console.log('value = ' + array[j].value);
+							break;
+						}
+							
+					}
+				}
+				InstrumentStore.loadArray(array);
+			}
+		}
+	</script>
+	<script type="text/javascript">
+		require(
+				[ 'Instrument', 'InstrumentStore', 'Market', 'jquery' ],
+				function(Instrument, InstrumentStore, Market, $) {
+					$('#input').hide();
+					InstrumentStore.load();
+					if (InstrumentStore.length() == 0) {
+						var instrument1 = new Instrument('nse:reliance',
+								'Reliance Industries', 950, 1020);
+						var instrument2 = new Instrument('nse:hdfc',
+								'Housing Development Corporation', 1350, 1450);
+						var instrument3 = new Instrument('nse:nifty',
+								'Nifty Index', 6800, 9000);
+						InstrumentStore.add(instrument2.id, instrument2);
+						InstrumentStore.add(instrument1.id, instrument1);
+						InstrumentStore.add(instrument3.id, instrument3);
+					}
+					var repeat = function() {
+					market(InstrumentStore);
+						setTimeout(function(){
+							var array = InstrumentStore.getArray();
+							if ($('.live-tile') != undefined) {
+								$('.live-tile').stop();
+								$('.live-tile').remove();
+							}
+							loadInstruments(InstrumentStore);
+							var text = ' ';
+							for ( var i = 0; i < array.length; i++) {
+	 							$('#group').append(
+										'<div class="live-tile"> <span class="tile-title">'
+												+ array[i].name
+												+ '</span><div><p>Low Limit = '
+												+ array[i].loLimit
+												+ '</p><p>High Limit = '
+												+ array[i].hiLimit
+												+ '</p></div><div><h2><b> '
+												+ array[i].value
+												+ '</b></h2></div></div>');
+	 							text += array[i].name + ' is '
+								+ array[i].value + '\n';
+	 							/* text = text.replace('\.',' point '); */
+							}
+							speak(text,{'noWorker' : true});
+							InstrumentStore.loadArray(array);
+							$(".live-tile").liveTile();
+							setTimeout(repeat, 30000);
+						}, 2000);
+					}
+					$('#addButton')
+							.click(
+									function() {
+										if (InstrumentStore.get($('#id').val()) == undefined) {
+											var instrument = new Instrument($(
+													'#id').val(), $('#name')
+													.val(),
+													$('#loLimit').val(), $(
+															'#hiLimit').val());
+											InstrumentStore.add(instrument.id,
+													instrument);
+											InstrumentStore.save();
+										}
+										$('#addForm')[0].reset();
+									});
+					$('#add').click(function() {
+						$('#group').hide();
+						$('#input').show();
+					});
+					$('#exitButton').click(function() {
+						$('#group').show();
+						$('#input').hide();
+					});
+					repeat();
+					InstrumentStore.save();
+				});
+	</script>
+</body>
+</html>
