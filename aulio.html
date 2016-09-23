@@ -12,7 +12,7 @@
 <script src="MetroJs.js"></script>
 <!-- <script type="text/javascript" src="speakGenerator.js"></script>
 <script type="text/javascript" src="speakClient.js"></script> -->
-<script type="text/javascript" src="mespeak/mespeak.js"></script>
+<script type="text/javascript" src="mespeak.js"></script>
 </head>
 <body>
 	<div id="audio"></div>
@@ -32,8 +32,8 @@
 		</form>
 	</div>
 	<script>
-		meSpeak.loadConfig("mespeak/mespeak_config.json");
-		meSpeak.loadVoice('mespeak/voices/en/en-us.json');
+		meSpeak.loadConfig("mespeak_config.json");
+		meSpeak.loadVoice('en-us.json');
 		var marketdata;
 		function logResults(json) {
 			console.log(JSON.stringify(json));
