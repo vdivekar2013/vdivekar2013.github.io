@@ -10,8 +10,9 @@
 <script type="text/javascript" data-main="main" src="./require.js"></script>
 <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
 <script src="MetroJs.js"></script>
-<script type="text/javascript" src="speakGenerator.js"></script>
-<script type="text/javascript" src="speakClient.js"></script>
+<!-- <script type="text/javascript" src="speakGenerator.js"></script>
+<script type="text/javascript" src="speakClient.js"></script> -->
+<script type="text/javascript" src="mespeak/mespeak.js"></script>
 </head>
 <body>
 	<div id="audio"></div>
@@ -31,36 +32,39 @@
 		</form>
 	</div>
 	<script>
+		meSpeak.loadConfig("mespeak/mespeak_config.json");
+		meSpeak.loadVoice('mespeak/voices/en/en-us.json');
 		var marketdata;
-		function logResults (json){ 
-			console.log(JSON.stringify(json)); 
+		function logResults(json) {
+			console.log(JSON.stringify(json));
 			marketdata = json;
 		}
 		function market(InstrumentStore) {
 			var array = InstrumentStore.getArray();
 			var url = "https://www.google.com/finance/info?q=";
-			for(var i = 0; i < array.length; i++)
+			for ( var i = 0; i < array.length; i++)
 				url = url.concat(array[i].id + ',');
-			$.ajax({ url: url, 
-					 dataType: "jsonp",
-					 async: false,
-					 jsonpCallback: "logResults"
-				});
+			$.ajax({
+				url : url,
+				dataType : "jsonp",
+				async : false,
+				jsonpCallback : "logResults"
+			});
 		}
 		function loadInstruments(InstrumentStore) {
 			var data = marketdata;
 			var array = InstrumentStore.getArray();
-			if(data != undefined && data instanceof Array) {
-				for(var i=0; i < data.length; i++) {
+			if (data != undefined && data instanceof Array) {
+				for ( var i = 0; i < data.length; i++) {
 					var id = data[i].e.concat(':').concat(data[i].t);
 					console.log('id = ' + id);
-					for(var j=0; j < array.length; j++) {
-						if(array[j].id.toUpperCase() == id.toUpperCase()) {
+					for ( var j = 0; j < array.length; j++) {
+						if (array[j].id.toUpperCase() == id.toUpperCase()) {
 							array[j].value = data[i].l_fix;
 							console.log('value = ' + array[j].value);
 							break;
 						}
-							
+
 					}
 				}
 				InstrumentStore.loadArray(array);
@@ -85,8 +89,8 @@
 						InstrumentStore.add(instrument3.id, instrument3);
 					}
 					var repeat = function() {
-					market(InstrumentStore);
-						setTimeout(function(){
+						market(InstrumentStore);
+						setTimeout(function() {
 							var array = InstrumentStore.getArray();
 							if ($('.live-tile') != undefined) {
 								$('.live-tile').stop();
@@ -95,7 +99,7 @@
 							loadInstruments(InstrumentStore);
 							var text = ' ';
 							for ( var i = 0; i < array.length; i++) {
-	 							$('#group').append(
+								$('#group').append(
 										'<div class="live-tile"> <span class="tile-title">'
 												+ array[i].name
 												+ '</span><div><p>Low Limit = '
@@ -105,11 +109,14 @@
 												+ '</p></div><div><h2><b> '
 												+ array[i].value
 												+ '</b></h2></div></div>');
-	 							text += array[i].name + ' is '
-								+ array[i].value + '\n';
-	 							/* text = text.replace('\.',' point '); */
+								text += array[i].name + ' is ' + array[i].value
+										+ '\n';
+								/* text = text.replace('\.',' point '); */
 							}
-							speak(text,{'noWorker' : true});
+							/* speak(text, {
+								'noWorker' : true
+							});*/
+							meSpeak.speak(text);
 							InstrumentStore.loadArray(array);
 							$(".live-tile").liveTile();
 							setTimeout(repeat, 30000);
