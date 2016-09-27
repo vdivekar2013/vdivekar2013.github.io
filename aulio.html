@@ -1,34 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta charset="ISO-8859-1">
 <title>Aulio</title>
-
-<link href="MetroJs.css" rel="stylesheet">
-
-
 <script type="text/javascript" data-main="main" src="./require.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
-<script src="MetroJs.js"></script>
-<!-- <script type="text/javascript" src="speakGenerator.js"></script>
-<script type="text/javascript" src="speakClient.js"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="mespeak.js"></script>
+
+<style>
+.tile {
+	display: inline-block;
+	width: 150px;
+	height: 150px;
+	margin: 5px;
+}
+
+.tile-content {
+	height: 75px;
+}
+</style>
 </head>
 <body>
-	<div id="audio"></div>
-	<div id="group" class="tile-strip two-wide cyan">
-		<div>
-			<button id="add">Add</button>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">A u l i o</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li><a id="add" href="#"> <span
+						class="glyphicon glyphicon-plus"></span> Add
+				</a></li>
+				<li><a href="#"> <span class="glyphicon glyphicon-th-list"></span>
+						Settings
+				</a></li>
+				<li><a href="#"> <span class="glyphicon glyphicon-user"></span>
+						About
+				</a></li>
+			</ul>
+		</div>
+	</nav>
+	<div id="group" class="container-fluid">
+		<div class="panel-group">
+			<!-- <div class="panel panel-primary tiles">
+				<div class="panel-heading tile-content">Reliance Industries</div>
+				<div class="panel-body tile-content">
+					<h3>1110.00</h3>
+				</div>
+			</div> -->
 		</div>
 	</div>
-	<div id="input" class="tile-strip one-wide cyan">
+	<div id="input" style="display: none">
 		<form id="addForm">
-			Id:<br> <input type="text" id="id"><br> Name:<br>
-			<input type="text" id="name"> Low Limit:<br> <input
-				type="text" id="loLimit"> High Limit:<br> <input
-				type="text" id="hiLimit">
-			<button type="button" id="addButton">Add</button>
-			<button type="button" id="exitButton">Exit</button>
+			<div class="form-group">
+				<label for="id">Identifier:</label>
+				<input type="text" class="form-control" id="id">
+			</div>
+			<div class="form-group">
+				<label for="name">Name:</label>
+				<input type="text" class="form-control" id="name">
+			</div>
+			<div class="form-group">
+				<label for="loLimit">Low Limit:</label>
+				<input type="number" class="form-control" id="loLimit">
+			</div>
+			<div class="form-group">
+				<label for="hiLimit">High Limit:</label>
+				<input type="number" class="form-control" id="hiLimit">
+			</div>
+			<button type="button" class="btn btn-default" id="addButton">Add</button>
+			<button type="button"  class="btn btn-default" id="exitButton">Exit</button>
 		</form>
 	</div>
 	<script>
@@ -90,37 +132,27 @@
 					}
 					var repeat = function() {
 						market(InstrumentStore);
-						setTimeout(function() {
-							var array = InstrumentStore.getArray();
-							if ($('.live-tile') != undefined) {
-								$('.live-tile').stop();
-								$('.live-tile').remove();
-							}
-							loadInstruments(InstrumentStore);
-							var text = ' ';
-							for ( var i = 0; i < array.length; i++) {
-								$('#group').append(
-										'<div class="live-tile"> <span class="tile-title">'
-												+ array[i].name
-												+ '</span><div><p>Low Limit = '
-												+ array[i].loLimit
-												+ '</p><p>High Limit = '
-												+ array[i].hiLimit
-												+ '</p></div><div><h2><b> '
-												+ array[i].value
-												+ '</b></h2></div></div>');
-								text += array[i].name + ' is ' + array[i].value
-										+ '\n';
-								/* text = text.replace('\.',' point '); */
-							}
-							/* speak(text, {
-								'noWorker' : true
-							});*/
-							meSpeak.speak(text);
-							InstrumentStore.loadArray(array);
-							$(".live-tile").liveTile();
-							setTimeout(repeat, 30000);
-						}, 2000);
+						setTimeout(
+								function() {
+									var array = InstrumentStore.getArray();
+									loadInstruments(InstrumentStore);
+									var text = ' ';
+									$('.tile').remove();
+									for ( var i = 0; i < array.length; i++) {
+										$('#group')
+												.append(
+														'<div class="panel panel-primary tile"><div class="panel-heading tile-content">'
+																+ array[i].name
+																+ '</div><div class="panel-body tile-content"><h3>'
+																+ array[i].value
+																+ '</h3></div></div>');
+										text += array[i].name + ' is '
+												+ array[i].value + '\n';
+									}
+									meSpeak.speak(text);
+									InstrumentStore.loadArray(array);
+									setTimeout(repeat, 30000);
+								}, 2000);
 					}
 					$('#addButton')
 							.click(
@@ -140,10 +172,12 @@
 					$('#add').click(function() {
 						$('#group').hide();
 						$('#input').show();
+						$('#add').hide();
 					});
 					$('#exitButton').click(function() {
 						$('#group').show();
 						$('#input').hide();
+						$('#add').show();
 					});
 					repeat();
 					InstrumentStore.save();
