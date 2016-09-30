@@ -32,19 +32,20 @@ define('InstrumentStore',['Instrument'], function(Instrument) {
 				for(var i = 0; i < array.length; i++)
 					if(array[i] instanceof Instrument)
 						this[array[i].id] = array[i];
-			}
+			} 
 		},
 		'load' : function() {
 			if(typeof(Storage) != undefined && localStorage != undefined && localStorage.getItem('instrumentFile') != undefined) {
 				var array = JSON.parse(localStorage.getItem('instrumentFile'));
 				console.log(array.length + ' no records loaded');
+				console.log('Objects loaded are ' + localStorage.getItem('instrumentFile'));
 				if(array instanceof Array) {
 					for(var key in this)
 						if(this[key] instanceof Instrument)
 							delete this[key];
 					for(var i = 0; i < array.length; i++)
 						if(array[i] instanceof Object) {
-							this[array[i].id] = new Instrument(array[i].id,array[i].name,array[i].loLimit,array[i].hiLimit);
+							this[array[i].id] = new Instrument(array[i].id,array[i].name,array[i].loLimit,array[i].hiLimit,array[i].notificationType);
 						}
 				}
 			}
@@ -60,6 +61,7 @@ define('InstrumentStore',['Instrument'], function(Instrument) {
 					}
 				}
 				console.log(array.length + ' no records saved');
+				console.log('saved object is ' + JSON.stringify(array));
 				localStorage.setItem('instrumentFile',JSON.stringify(array));
 			}
 		},

@@ -21,7 +21,7 @@
 }
 
 .tile-close {
-	margin:0px;
+	margin: 0px;
 }
 
 .tile-content {
@@ -42,27 +42,34 @@
 				<li><a href="#"> <span class="glyphicon glyphicon-th-list"></span>
 						Settings
 				</a></li>
-				<li><a id="audio" data-audio="off" href="#"> <span id="volume" class="glyphicon glyphicon-volume-off"></span>
-						Audio
+				<li><a id="audio" data-audio="off" href="#"> <span
+						id="volume" class="glyphicon glyphicon-volume-off"></span> Audio
 				</a></li>
 			</ul>
 		</div>
 	</nav>
 	<div id="group" class="container-fluid">
-		<div class="panel-group">
-			<!--<div class="panel panel-primary tile">
-				 <div class="panel-heading tile-content">
-					<div class="box" style="width:100px">Reliance Industries</div>
-					<div class="box"  style="float:right">
-						<a href="#"><span style="color: black"
-							class="glyphicon glyphicon-remove"></span></a>
+		<!-- <div class="panel-group">
+			<div class="panel panel-primary tile">
+				<div class="panel-heading tile-content">
+					<div style="display: inline-block; width: 90px">Reliance
+						Industries</div>
+					<div style="display: inline-block; float: right">
+						<div>
+							<a title="Remove instrument" href="#"><span style="color: black"
+								class="glyphicon glyphicon-remove"></span></a>
+						</div>
+						<div>
+							<a title="Edit parameters" href="#"><span style="color: black"
+								class="glyphicon glyphicon-edit"></span></a>
+						</div>
 					</div>
 				</div>
 				<div class="panel-body tile-content">
 					<h3>1110.00</h3>
-				</div> -->
+				</div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 	<div id="input" style="display: none">
 		<form id="addForm">
@@ -94,8 +101,56 @@
 						placeholder="High Limit">
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="radio-inline"><input title="Always notify"
+					id="always" type="radio" name="optradio" checked>Always</label> <label
+					class="radio-inline"><input
+					title="Notify on Threshold crossing" id="threshold" type="radio"
+					name="optradio">Threshold</label>
+			</div>
 			<button type="button" class="btn btn-default" id="addButton">Add</button>
 			<button type="button" class="btn btn-default" id="exitButton">Exit</button>
+		</form>
+	</div>
+	<div id="update" style="display: none">
+		<form id="updateForm">
+			<div class="form-group row">
+				<label class="sr-only" for="id2">Identifier:</label>
+				<div class="col-sm-2 col-xs-8">
+					<input type="text" class="form-control" id="id2"
+						placeholder="Identifier" disabled>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="sr-only" for="name2">Name:</label>
+				<div class="col-sm-4 col-xs-10">
+					<input type="text" class="form-control" id="name2"
+						placeholder="Name" disabled>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="sr-only" for="loLimit2">Low Limit:</label>
+				<div class="col-sm-2 col-xs-6">
+					<input type="number" class="form-control" id="loLimit2"
+						placeholder="Low Limit">
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="sr-only" for="hiLimit2">High Limit:</label>
+				<div class="col-sm-2 col-xs-6">
+					<input type="number" class="form-control" id="hiLimit2"
+						placeholder="High Limit">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="radio-inline"><input title="Always notify"
+					id="always2" type="radio" name="optradio" checked>Always</label> <label
+					class="radio-inline"><input
+					title="Notify on Threshold crossing" id="threshold2" type="radio"
+					name="optradio">Threshold</label>
+			</div>
+			<button type="button" class="btn btn-default" id="updateButton">Update</button>
+			<button type="button" class="btn btn-default" id="exitButton2">Cancel</button>
 		</form>
 	</div>
 	<script>
@@ -146,11 +201,11 @@
 					InstrumentStore.load();
 					if (InstrumentStore.length() == 0) {
 						var instrument1 = new Instrument('nse:reliance',
-								'Reliance Industries', 950, 1020);
+								'Reliance Industries', 950, 1020,0);
 						var instrument2 = new Instrument('nse:hdfc',
-								'Housing Development Corporation', 1350, 1450);
+								'Housing Development Corporation', 1350, 1450,0);
 						var instrument3 = new Instrument('nse:nifty',
-								'Nifty Index', 6800, 9000);
+								'Nifty Index', 6800, 9000,0);
 						InstrumentStore.add(instrument2.id, instrument2);
 						InstrumentStore.add(instrument1.id, instrument1);
 						InstrumentStore.add(instrument3.id, instrument3);
@@ -170,15 +225,25 @@
 														'<div class="panel panel-primary tile"><div class="panel-heading tile-content">'
 																+ '<div style="display:inline-block;width:90px">'
 																+ array[i].name
-																+ '</div><div style="display:inline-block;float:right"><a id="close" data-id="'
+																+ '</div><div style="display:inline-block;float:right"><div><a title="Remove instrument" id="close" data-id="'
 																+ array[i].id
 																+ '" href="#"><span style="color: black" class="glyphicon glyphicon-remove"></span></a></div>'
+																+ '<div><a title="Edit instrument" id="edit" data-id="'
+																+ array[i].id
+																+ '" href="#"><span style="color: black" class="glyphicon glyphicon-edit"></span></a></div></div>'
 																+ '</div><div class="panel-body tile-content"><h3>'
 																+ array[i].value
 																+ '</h3></div></div>');
+										console.log('notification type is ' + array[i].notificationType);
+										if(array[i].notificationType == 0) {
 										text += array[i].name + ' is '
 												+ array[i].value + '\n';
+										} else if(array[i].notificationType == 1 && (array[i].value <= array[i].loLimit || array[i].value >= array[i].hiLimit)){
+											text += array[i].name + ' is '
+											+ array[i].value + '\n';
+										}
 									}
+									console.log('Text spoken is ' + text);
 									if($('#audio').data('audio') == "on")
 										meSpeak.speak(text);
 									InstrumentStore.loadArray(array);
@@ -186,11 +251,27 @@
 										setTimeout(repeat, 30000,true);
 								}, 2000);
 					};
-					$('#group').on('click','a',function() {
+					$('#group').on('click','#close',function() {
 						console.log('close link clicked with data ' + $(this).data('id'));
 						InstrumentStore.delete($(this).data('id'));
 						InstrumentStore.save();
 						repeat(false);
+					});
+					$('#group').on('click','#edit',function() {
+						console.log('Edit link clicked with data ' + $(this).data('id'));
+						var instrument = InstrumentStore.get($(this).data('id'));
+						$('#id2').val(instrument.id);
+						$('#name2').val(instrument.name);
+						$('#loLimit2').val(instrument.loLimit);
+						$('#hiLimit2').val(instrument.hiLimit);
+						if(instrument.notificationType == 0)
+							$('#always2').prop('checked',true);
+						else
+							$('#threshold2').prop('checked',true);
+						$('#group').hide();
+						$('#input').hide();
+						$('#update').show();
+						$('#add').hide();
 					});
 					$('#audio').click(function() {
 						if($(this).data('audio') == "on") {
@@ -208,11 +289,17 @@
 							.click(
 									function() {
 										if (InstrumentStore.get($('#id').val()) == undefined) {
+											var notificationType;
+											if($("#always").prop('checked') == true)
+												notificationType = 0;
+											else
+												notificationType = 1;
 											var instrument = new Instrument($(
 													'#id').val(), $('#name')
 													.val(),
 													$('#loLimit').val(), $(
-															'#hiLimit').val());
+															'#hiLimit').val(),notificationType);
+											console.log('notification type = ' + notificationType);
 											InstrumentStore.add(instrument.id,
 													instrument);
 											InstrumentStore.save();
@@ -220,14 +307,49 @@
 										}
 										$('#addForm')[0].reset();
 									});
+					$('#updateButton')
+					.click(
+							function() {
+								if (InstrumentStore.get($('#id2').val()) != undefined) {
+									var notificationType;
+									if($("#always2").prop('checked') == true)
+										notificationType = 0;
+									else
+										notificationType = 1;
+									var instrument = new Instrument($(
+											'#id2').val(), $('#name2')
+											.val(),
+											$('#loLimit2').val(), $(
+													'#hiLimit2').val(),notificationType);
+									console.log('notification type = ' + notificationType);
+									InstrumentStore.delete(instrument.id);
+									InstrumentStore.add(instrument.id,
+											instrument);
+									InstrumentStore.save();
+									repeat(false);
+								}
+								$('#addForm')[0].reset();
+								$('#group').show();
+								$('#input').hide();
+								$('#update').hide();
+								$('#add').show();
+							});
 					$('#add').click(function() {
 						$('#group').hide();
+						$('#update').hide();
 						$('#input').show();
 						$('#add').hide();
 					});
 					$('#exitButton').click(function() {
 						$('#group').show();
 						$('#input').hide();
+						$('#update').hide();
+						$('#add').show();
+					});
+					$('#exitButton2').click(function() {
+						$('#group').show();
+						$('#input').hide();
+						$('#update').hide();
 						$('#add').show();
 					});
 					repeat(true);
