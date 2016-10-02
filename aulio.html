@@ -38,7 +38,7 @@
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">A u l i o</a>
+				<a class="navbar-brand" id="application" href="#">A u l i o</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav">
@@ -160,6 +160,10 @@
 			<button type="button" class="btn btn-default" id="exitButton2">Cancel</button>
 		</form>
 	</div>
+	<div id="about" style="display: none">
+		<div class="well"><p>Aulio stands for Audio Portfolio which periodically reads out instrument values. One is able to add / edit / delete instruments using the menu provided. By default, Audio is kept off which can be turned on by clicking on Audio menu at the top.</p>
+						  <p>The chosen instruments can be set with lower and upper thresholds. Audio could be always played or depending upon crossing over of the set threshold on lower or upper side.</p></div>
+	</div>	
 	<script>
 		meSpeak.loadConfig("mespeak_config.json");
 		meSpeak.loadVoice('en-us.json');
@@ -358,6 +362,21 @@
 						$('#input').hide();
 						$('#update').hide();
 						$('#add').show();
+					});
+					$('#application').click(function() {
+						if($('#about').is(":visible")) {
+							$('#group').show();
+							$('#input').hide();
+							$('#update').hide();
+							$('#about').hide();
+							$('#add').show();
+						} else {
+							$('#group').hide();
+							$('#input').hide();
+							$('#update').hide();
+							$('#about').show();
+							$('#add').hide();
+						}
 					});
 					repeat(true);
 					InstrumentStore.save();
