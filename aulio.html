@@ -33,19 +33,26 @@
 	<nav class="navbar navbar-inverse">
 		<div class="container-fluid">
 			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
 				<a class="navbar-brand" href="#">A u l i o</a>
 			</div>
-			<ul class="nav navbar-nav">
-				<li><a id="add" href="#"> <span
-						class="glyphicon glyphicon-plus"></span> Add
-				</a></li>
-				<li><a href="#"> <span class="glyphicon glyphicon-th-list"></span>
-						Settings
-				</a></li>
-				<li><a id="audio" data-audio="off" href="#"> <span
-						id="volume" class="glyphicon glyphicon-volume-off"></span> Audio
-				</a></li>
-			</ul>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li><a id="add" href="#"> <span
+							class="glyphicon glyphicon-plus"></span> Add
+					</a></li>
+					<li><a href="#"> <span class="glyphicon glyphicon-th-list"></span>
+							Settings
+					</a></li>
+					<li><a id="audio" data-audio="off" href="#"> <span
+							id="volume" class="glyphicon glyphicon-volume-off"></span> Audio
+					</a></li>
+				</ul>
+			</div>
 		</div>
 	</nav>
 	<div id="group" class="container-fluid">
@@ -228,7 +235,7 @@
 																+ '</div><div style="display:inline-block;float:right"><div><a title="Remove instrument" id="close" data-id="'
 																+ array[i].id
 																+ '" href="#"><span style="color: black" class="glyphicon glyphicon-remove"></span></a></div>'
-																+ '<div><a title="Edit instrument" id="edit" data-id="'
+																+ '<div style="margin-top:20px"><a title="Edit instrument" id="edit" data-id="'
 																+ array[i].id
 																+ '" href="#"><span style="color: black" class="glyphicon glyphicon-edit"></span></a></div></div>'
 																+ '</div><div class="panel-body tile-content"><h3>'
