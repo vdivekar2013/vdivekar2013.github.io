@@ -161,49 +161,35 @@
 		</form>
 	</div>
 	<div id="about" style="display: none">
-		<div class="well"><p>Aulio stands for Audio Portfolio which periodically reads out instrument values. One is able to add / edit / delete instruments using the menu provided. By default, Audio is kept off which can be turned on by clicking on Audio menu at the top.</p>
-						  <p>The chosen instruments can be set with lower and upper thresholds. Audio could be always played or depending upon crossing over of the set threshold on lower or upper side.</p>
-						  <p class="em small">Click on the title above to return</div>
-	</div>	
+		<div class="well">
+			<p>Aulio stands for Audio Portfolio which periodically reads out
+				instrument values. One is able to add / edit / delete instruments
+				using the menu provided. By default, Audio is kept off which can be
+				turned on by clicking on Audio menu at the top.</p>
+			<p>The chosen instruments can be set with lower and upper
+				thresholds. Audio could be always played or depending upon crossing
+				over of the set threshold on lower or upper side.</p>
+			<p class="em small">Click on the title above to return
+		</div>
+	</div>
+	<div id="settings" style="display: none">
+		<form class="form-inline">
+			<div class="form-group">
+				<label for="interval">Time interval:</label> <input type="number"
+					size="4" max="600" min="30" class="form-control" id="interval">
+				<p class="form-control-static" style="vertical-align: text-top">Sec</p>
+			</div>
+			<div>
+				<button id="saveSettings" type="submit" class="btn btn-default"
+					style="vertical-align: center">Save</button>
+				<button id="cancelSettings" type="submit" class="btn btn-default"
+					style="vertical-align: center">Cancel</button>
+			</div>
+		</form>
+	</div>
 	<script>
 		meSpeak.loadConfig("mespeak_config.json");
 		meSpeak.loadVoice('en-us.json');
-		var marketdata;
-		function logResults(json) {
-			console.log(JSON.stringify(json));
-			marketdata = json;
-		}
-		function market(InstrumentStore) {
-			var array = InstrumentStore.getArray();
-			var url = "https://www.google.com/finance/info?q=";
-			for ( var i = 0; i < array.length; i++)
-				url = url.concat(array[i].id + ',');
-			$.ajax({
-				url : url,
-				dataType : "jsonp",
-				async : false,
-				jsonpCallback : "logResults"
-			});
-		}
-		function loadInstruments(InstrumentStore) {
-			var data = marketdata;
-			var array = InstrumentStore.getArray();
-			if (data != undefined && data instanceof Array) {
-				for ( var i = 0; i < data.length; i++) {
-					var id = data[i].e.concat(':').concat(data[i].t);
-					console.log('id = ' + id);
-					for ( var j = 0; j < array.length; j++) {
-						if (array[j].id.toUpperCase() == id.toUpperCase()) {
-							array[j].value = data[i].l_fix;
-							console.log('value = ' + array[j].value);
-							break;
-						}
-
-					}
-				}
-				InstrumentStore.loadArray(array);
-			}
-		}
 	</script>
 	<script type="text/javascript">
 		require(
@@ -224,11 +210,10 @@
 					}
 					var repeat = function(doAgain) {
 						if(doAgain == true)
-							market(InstrumentStore);
+							Market.call();
 						setTimeout(
 								function() {
 									var array = InstrumentStore.getArray();
-									loadInstruments(InstrumentStore);
 									var text = ' ';
 									$('.tile').remove();
 									for ( var i = 0; i < array.length; i++) {
@@ -261,7 +246,7 @@
 									InstrumentStore.loadArray(array);
 									if(doAgain == true)
 										setTimeout(repeat, 30000,true);
-								}, 2000);
+								}, 1000);
 					};
 					$('#group').on('click','#close',function() {
 						console.log('close link clicked with data ' + $(this).data('id'));
