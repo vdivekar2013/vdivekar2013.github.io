@@ -45,12 +45,18 @@
 					<li><a id="add" href="#"> <span
 							class="glyphicon glyphicon-plus"></span> Add
 					</a></li>
-					<li><a href="#"> <span class="glyphicon glyphicon-th-list"></span>
-							Settings
-					</a></li>
 					<li><a id="audio" data-audio="off" href="#"> <span
 							id="volume" class="glyphicon glyphicon-volume-off"></span> Audio
 					</a></li>
+					<li style="margin-top: 9px">
+						<form class="form-inline">
+							<div class="form-group">
+								<span><font color="gray">Refresh Time:</font></span> <input
+									style="width: 80px" type="number" min="30" max="600" step="10"
+									class="form-control" id="period" onkeydown="return false">
+							</div>
+						</form>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -187,6 +193,13 @@
 			</div>
 		</form>
 	</div>
+	<nav class="navbar navbar-inverse navbar-fixed-bottom">
+		<div class="container-fluid">
+			<ul class="nav navbar-nav">
+				<li><output id="lastupdate"></output></li>
+			</ul>
+		</div>
+	</nav>
 	<script>
 		meSpeak.loadConfig("mespeak_config.json");
 		meSpeak.loadVoice('en-us.json');
@@ -195,6 +208,12 @@
 		require(
 				[ 'Instrument', 'InstrumentStore', 'Market', 'jquery' ],
 				function(Instrument, InstrumentStore, Market, $) {
+					var period;
+					if(typeof(Storage) != undefined && localStorage != undefined && localStorage.getItem('period') != undefined)
+						period = localStorage.getItem('period')
+					else	
+						period = 30;
+					$('#period').val(period);
 					$('#input').hide();
 					InstrumentStore.load();
 					if (InstrumentStore.length() == 0) {
@@ -213,6 +232,7 @@
 							Market.call();
 						setTimeout(
 								function() {
+									$('#lastupdate').val('Last update at : ' + (new Date()).toLocaleTimeString());
 									var array = InstrumentStore.getArray();
 									var text = ' ';
 									$('.tile').remove();
@@ -245,7 +265,7 @@
 										meSpeak.speak(text);
 									InstrumentStore.loadArray(array);
 									if(doAgain == true)
-										setTimeout(repeat, 30000,true);
+										setTimeout(repeat, period * 1000,true);
 								}, 1000);
 					};
 					$('#group').on('click','#close',function() {
@@ -362,6 +382,12 @@
 							$('#update').hide();
 							$('#about').show();
 							$('#add').hide();
+						}
+					});
+					$('#period').click(function() {
+						period = $('#period').val();
+						if(typeof(Storage) != undefined && localStorage != undefined) {
+							localStorage.setItem('period',period);
 						}
 					});
 					repeat(true);

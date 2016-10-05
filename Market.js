@@ -1,6 +1,6 @@
 define('Market',['InstrumentStore','jquery'],function(InstrumentStore,$) {
 	this.logResults = function(json) {
-		console.log('In callback ' + JSON.stringify(json));
+		console.log((new Date()).toLocaleTimeString() + ' In callback ' + JSON.stringify(json));
 	};
 	return {
 		'call' : function() {
@@ -15,7 +15,7 @@ define('Market',['InstrumentStore','jquery'],function(InstrumentStore,$) {
 				jsonpCallback : "logResults",
 				// Work with the response
 			    success: function( data ) {
-			    	console.log('In Success ' + JSON.stringify(data)); // server response
+			    	console.log((new Date()).toLocaleTimeString() + ' In Success ' + JSON.stringify(data)); // server response
 					var array = InstrumentStore.getArray();
 					if (data != undefined && data instanceof Array) {
 						for ( var i = 0; i < data.length; i++) {
