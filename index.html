@@ -2,20 +2,256 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Hello World</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade Strategy Calculator</title>
+<script type="text/javascript" data-main="main" src="./require.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<style>
+.add_form {
+	margin-bottom: 10px;
+}
+
+.compute_button {
+	float: right;
+	margin-bottom:10px;
+}
+
+.output_table {
+	clear:both;
+}
+</style>
 </head>
 <body>
-	<h1>Hello, World</h1>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" id="application" href="#">Trade Strategy
+					Calculator</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div id="group" class="container-fluid">
+		<div class="row">
+			<div class="col-md-3">
+				<div id="input">
+					<form id="addForm" class="add_form">
+						<div class="form-group row">
+							<label class="sr-only" for="instrument">Instrument:</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="instrument"
+									placeholder="Instrument name">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="sr-only" for="instrument">LotSize:</label>
+							<div class="col-md-4">
+								<input type="number" class="form-control" id="lotSize"
+									placeholder="Lot Size">
+							</div>
+							<div class="col-md-6">
+								<input type="number" class="form-control" id="centralStrike"
+									placeholder="Central Strike">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="sr-only" for="type">Instrument Type:</label>
+							<div class="col-md-6">
+								<select class="form-control" id="type">
+									<option id="future" value="Future">Future</option>
+									<option id="call" value="Call Option">Option ( Call )</option>
+									<option id="put" value="Put Option">Option ( Put )</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="sr-only" for="strike">StrikePrice:</label>
+							<div class="col-md-6">
+								<input type="number" class="form-control" id="strike"
+									placeholder="Strike price">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="radio-inline"><input title="Buy" id="buy"
+								type="radio" name="optradio" checked>Buy</label> <label
+								class="radio-inline"><input title="Sell" id="sell"
+								type="radio" name="optradio">Sell</label>
+						</div>
+						<div class="form-group row">
+							<label class="sr-only" for="price">Price:</label>
+							<div class="col-md-8">
+								<input type="number" class="form-control" id="price"
+									placeholder="Instrument price">
+							</div>
+						</div>
+						<button type="button" class="btn btn-primary col-md-3"
+							id="addButton" disabled="disabled">Add</button>
+					</form>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div id="instrumentArea">
+					<div class="table-responsive" id="instrumentReference"></div>
+					<div>
+						<button type="button"
+							class="btn btn-primary col-md-1 compute_button"
+							id="computeButton" disabled="disabled">Compute</button>
+					<div style="clear:both"></div>
+					</div>
+				</div>
+				<div id="outputArea">
+					<div class="table-responsive" id="outputReference"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="about" style="display: none">
+		<div class="well">
+			<p>Trade strategy calculator calculates the profit and loss at
+				range of underlying values. A strategy could be formed of multiple
+				legs using varied future and option combinations.</p>
+			<p>The instrument editor on the left side is used to add strategy
+				legs which appear on the right side table at the top. Click
+				'Calculate' button to compute the profit and loss figures</p>
+			<p class="em small">Click on the title above to return></p>
+		</div>
+	</div>
 	<script type="text/javascript">
-	function logResults(json){ 
-		console.log(JSON.stringify(json)); 
-		alert(JSON.stringify(json));
-	};
-	alert('i am here');
-	$.ajax({ url:"https://www.google.com/finance/info?q=bom:500672",
-			 dataType: "jsonp",
-			 jsonpCallback: "logResults"});
+		require(
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable', 'jquery' ],
+				function(foInstrument, foInstrumentStore, instrumentTable, $) {
+					foInstrumentStore.load();
+					var rowNumber = foInstrumentStore.length();
+					if(rowNumber != 0) {
+						var array = foInstrumentStore.getArray();
+						var foFirstInst = array[0];
+						$('#instrument').val(foFirstInst.name);
+						$('#instrument').attr('readonly', true);
+						$('#lotSize').val(foFirstInst.lotSize);
+						$('#lotSize').attr('readonly', true);
+						$('#centralStrike').val(foFirstInst.centralStrike);
+						$('#centralStrike').attr('readonly', true);
+						$('#computeButton').removeAttr('disabled'); 
+					} else {
+						$('#instrument').attr('readonly', false);
+						$('#lotSize').attr('readonly', false);
+						$('#centralStrike').attr('readonly', false);
+						$('#computeButton').attr('disabled', 'disabled');					
+					}
+					instrumentTable.show();
+					instrumentTable.compute();
+					$('#addButton')
+							.click(
+									function() {
+										var sel = $("select option:selected")
+												.val();
+										var strike = sel != 'Future' ? $(
+												'#strike').val() : '';
+										var action;
+										if ($("#buy").prop('checked') == true)
+											action = 'Buy';
+										else
+											action = 'Sell';
+										var exchange = 'NSE';
+										var lotSize = $('#lotSize').val();
+										var centralStrike = $('#centralStrike').val();
+										var id = 'key' + (foInstrumentStore.length() + 1);
+										var price = $('#price').val();
+										var name = $('#instrument').val()
+										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike);
+										foInstrumentStore.add(id,foInst);
+										instrumentTable.show();
+										foInstrumentStore.save();
+										rowNumber += 1;
+										$('#addForm')[0].reset();
+										var array = foInstrumentStore.getArray();
+										var foFirstInst = array[0];
+										$('#instrument').val(foFirstInst.name);
+										$('#instrument').attr('readonly', true);
+										$('#lotSize').val(foFirstInst.lotSize);
+										$('#lotSize').attr('readonly', true);
+										$('#centralStrike').val(foFirstInst.centralStrike);
+										$('#centralStrike').attr('readonly', true);
+										$('#strike').hide();
+										$('#strike').val('100');
+										$('#addButton').attr('disabled', 'disabled');
+										instrumentTable.compute();
+									});
+					$('#instrumentReference').on('click','#delete',function() {
+						console.log('Delete link clicked with data ' + $(this).data('key'));
+						foInstrumentStore.delete($(this).data('key'));
+						foInstrumentStore.save();
+						instrumentTable.show();
+						var rowNumber = foInstrumentStore.length();
+						if(rowNumber == 0) {
+							$('#instrument').attr('readonly', false);
+							$('#lotSize').attr('readonly', false);
+							$('#centralStrike').attr('readonly', false);
+							$('#instrument').val('');
+							$('#lotSize').val('');
+							$('#centralStrike').val('');
+							$('#computeButton').attr('disabled', 'disabled');
+							$('#outputTable').remove();
+						} else {
+							instrumentTable.compute();
+						}
+					});
+					$('#computeButton').click(function() {
+						instrumentTable.compute();
+					});
+					$('#application').click(function() {
+						if ($('#about').is(":visible")) {
+							$('#group').show();
+							$('#about').hide();
+						} else {
+							$('#group').hide();
+							$('#about').show();
+						}
+					});
+					$("select#type").change(function() {
+						var str = "";
+						$("select option:selected").each(function() {
+							str = $(this).val();
+						});
+						if (str == 'Future') {
+							$('#strike').hide();
+							$('#strike').val('100');
+						} else {
+							$('#strike').show();
+							$('#strike').val('');
+							$('#addButton').attr('disabled', 'disabled');
+						}
+					}).trigger("change");
+					(function() {
+						$('form#addForm input').keyup(function() {
+							var empty = false;
+							$('form#addForm input').each(function() {
+								if ($.trim($(this).val()) == '') {
+									empty = true;
+								}
+							});
+
+							if (empty) {
+								$('#addButton').attr('disabled', 'disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
+							} else {
+								$('#addButton').removeAttr('disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
+							}
+						});
+					})()
+				});
 	</script>
 </body>
 </html>
