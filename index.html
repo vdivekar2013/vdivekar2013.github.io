@@ -189,6 +189,7 @@
 										$('#strike').val('100');
 										$('#addButton').attr('disabled', 'disabled');
 										instrumentTable.compute();
+										$('#computeButton').removeAttr('disabled'); 
 									});
 					$('#instrumentReference').on('click','#delete',function() {
 						console.log('Delete link clicked with data ' + $(this).data('key'));
