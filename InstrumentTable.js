@@ -44,10 +44,10 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 			], rx = /\.0+$|(\.[0-9]*[1-9])0+$/, i;
 		for (i = 0; i < si.length; i++) {
 			if (Math.abs(num) >= si[i].value) {
-				return '₹ ' + (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+				return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 			}
 		}
-		return '₹ ' + num.toFixed(digits).replace(rx, "$1");
+		return num.toFixed(digits).replace(rx, "$1");
 	};
 	return {
 		'show' : function() {
@@ -60,6 +60,9 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 				rowDiv += '<tr>'
 					+ '<td>'
 					+ (i+1)
+					+ '</td>'
+					+ '<td>'
+					+ foInstrument.name
 					+ '</td>'
 					+ '<td>'
 					+ foInstrument.type
@@ -83,7 +86,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 				<thead>\
 				<tr class="info">\
 				<th>No.</th>\
-				<th>Instrument Type</th>\
+				<th>Instrument</th>\
+				<th>Type</th>\
 				<th>Strike Price</th>\
 				<th>Action</th>\
 				<th>Instrument Price</th>\
@@ -102,45 +106,65 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 			if(foArray.length == 0)
 				return;
 			$('#outputTable').remove();
-			var array = foInstrumentStore.getArray();
-			var foFirstInst = array[0];
-			var centralStrike = foFirstInst.centralStrike;
-			var down20Percent = Math.round(centralStrike - centralStrike * 20 / 100);
-			var twoPercent =  Math.round(centralStrike * 2 / 100);
-			var rowDiv = '';
-			var currentPrice = down20Percent;
-			for(var i=0; i < 20; i++) {
-				var cellDiv = '';
-				var total = 0;
-				for(var j=0; j < array.length; j++) {
-					var pfLoss = profitOrLoss(array[j].action,array[j].type,array[j].strikePrice,currentPrice,array[j].price,array[j].lotSize);
-					total += pfLoss;
-					cellDiv += '<td class="text-right">'
-						+ numberFormatter(pfLoss,2)
-						+ '</td>';
+			// Form the table header - start
+			var headerArray = [];
+			var headerInstrument = '';
+			for (var h1 = 0; h1 < foArray.length; h1++) {
+				if(headerInstrument != foArray[h1].name) {
+					headerArray.push('Price');
+					headerInstrument = foArray[h1].name;
+					headerArray.push(foArray[h1].name);
 				}
-				rowDiv += '<tr>'
-					+ '<td class="text-right">'
-					+ currentPrice
-					+ '</td>'
-					+ cellDiv
-					+ '<td class="text-right">'
-					+ numberFormatter(total,2)
-					+ '</td>'
-					+ '</tr>';
-				currentPrice += twoPercent;
+			}
+			headerArray.push('Total');
+			// Form the table header - end
+
+			// Fill the profit and loss values - start
+			var valueArray = [];
+			for(var h3 = 0; h3 < 20; h3++) {
+				var rowArray = [];
+				headerInstrument = '';
+				var centralStrike,down20Percent,twoPercent,currentPrice;
+				var totalPL = 0,grandTotal = 0;
+				for (var h2 = 0; h2 < foArray.length; h2++) {
+					if(headerInstrument != foArray[h2].name) {
+						centralStrike = foArray[h2].centralStrike;
+						down20Percent = centralStrike - centralStrike * 20 / 100;
+						twoPercent =  centralStrike * 2 / 100;
+						currentPrice = down20Percent + twoPercent * h3;
+						if(headerInstrument != '')
+							rowArray.push(totalPL);
+						rowArray.push(currentPrice);
+						totalPL = 0;
+						headerInstrument = foArray[h2].name;
+					}
+					totalPL += profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
+					grandTotal += totalPL;
+				}
+				rowArray.push(totalPL);
+				rowArray.push(grandTotal);
+				valueArray.push(rowArray);
 			}
 			var headDiv = '';
-			for(var k=0; k < array.length; k++) {
-				headDiv += '<th class="text-center">' + 'Item ' + (k+1) + '</th>';
+			for(var k=0; k < headerArray.length; k++) {
+				headDiv += '<th class="text-center">' + headerArray[k] + '</th>';
+			}
+			var rowDiv = '';
+			for(var m=0; m < valueArray.length; m++) {
+				var cellDiv = '';
+				var lineArray = valueArray[m];
+				for(var n=0; n < lineArray.length; n++) {
+					cellDiv += '<td class="text-right">'
+						+ lineArray[n]
+						+ '</td>';
+				}
+				rowDiv += '<tr>' + cellDiv + '</tr>';
 			}
 			tableDiv = '<table id="outputTable"\
 				class="table table-bordered table-condensed table-striped">\
 				<thead>\
-				<tr class="info">\
-				<th class="text-center">Price</th>' +
+				<tr class="info">' +
 				headDiv +
-				'<th class="text-center">Total</th>' +
 				'</tr>\
 				</thead>\
 				<tbody>' +

@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trade Strategy Calculator</title>
 <script type="text/javascript" data-main="main" src="./require.js"></script>
+<link rel="stylesheet" href="jquery-ui.css">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script type="text/javascript" src="jquery-3.1.0.min.js"></script>
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+<script src="jquery-ui.js"></script>
+ -->
+ <!-- <script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 
 <style>
 .add_form {
@@ -47,20 +50,20 @@
 	<div id="group" class="container-fluid">
 		<div class="row">
 			<div class="col-md-3">
-				<div id="input">
+				<div id="input" style="display:none">
 					<form id="addForm" class="add_form">
-						<div class="form-group row">
+						<div class="form-group row ui-widget">
 							<label class="sr-only" for="instrument">Instrument:</label>
 							<div class="col-md-10">
 								<input type="text" class="form-control" id="instrument"
 									placeholder="Instrument name">
 							</div>
 						</div>
-						<div class="form-group row">
+						<div class="form-group row ">
 							<label class="sr-only" for="instrument">LotSize:</label>
 							<div class="col-md-4">
 								<input type="number" class="form-control" id="lotSize"
-									placeholder="Lot Size">
+									placeholder="Lot Size" readonly="readonly">
 							</div>
 							<div class="col-md-6">
 								<input type="number" class="form-control" id="centralStrike"
@@ -130,25 +133,35 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+	require.config({
+		baseUrl : '.',
+		paths : {
+			'jquery' : 'jquery-3.1.0.min',
+			'jqueryui' : 'jquery-ui.min',
+			'bootstrap' : 'bootstrap.min'
+		},
+		shim : {
+			/* Set bootstrap dependencies (just jQuery) */
+			'jqueryui' : [ 'jquery' ],
+		    'bootstrap' : [ 'jquery' ]
+		}
+	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable', 'jquery' ],
-				function(foInstrument, foInstrumentStore, instrumentTable, $) {
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','jquery','jqueryui','bootstrap' ],
+				function(foInstrument, foInstrumentStore, instrumentTable,contract, $,autocomplete) {
 					foInstrumentStore.load();
+					var onSuccess = function() {
+						var keys = contract.getKeyArray();
+						$('#instrument').autocomplete({ source: keys });
+						$("#lotSize").attr('readonly',true); 
+						$('#input').show();
+						console.log('contracts - ' + JSON.stringify(keys));
+					}
+					contract.call(onSuccess);
 					var rowNumber = foInstrumentStore.length();
 					if(rowNumber != 0) {
-						var array = foInstrumentStore.getArray();
-						var foFirstInst = array[0];
-						$('#instrument').val(foFirstInst.name);
-						$('#instrument').attr('readonly', true);
-						$('#lotSize').val(foFirstInst.lotSize);
-						$('#lotSize').attr('readonly', true);
-						$('#centralStrike').val(foFirstInst.centralStrike);
-						$('#centralStrike').attr('readonly', true);
 						$('#computeButton').removeAttr('disabled'); 
 					} else {
-						$('#instrument').attr('readonly', false);
-						$('#lotSize').attr('readonly', false);
-						$('#centralStrike').attr('readonly', false);
 						$('#computeButton').attr('disabled', 'disabled');					
 					}
 					instrumentTable.show();
@@ -179,12 +192,9 @@
 										$('#addForm')[0].reset();
 										var array = foInstrumentStore.getArray();
 										var foFirstInst = array[0];
-										$('#instrument').val(foFirstInst.name);
-										$('#instrument').attr('readonly', true);
-										$('#lotSize').val(foFirstInst.lotSize);
-										$('#lotSize').attr('readonly', true);
-										$('#centralStrike').val(foFirstInst.centralStrike);
-										$('#centralStrike').attr('readonly', true);
+										$('#instrument').val(name);
+										$('#lotSize').val(lotSize);
+										$('#centralStrike').val(centralStrike);
 										$('#strike').hide();
 										$('#strike').val('100');
 										$('#addButton').attr('disabled', 'disabled');
@@ -220,6 +230,14 @@
 						} else {
 							$('#group').hide();
 							$('#about').show();
+						}
+					});
+					$('#instrument').focusout(function() {
+						var instrument = $('#instrument').val().trim();
+						if(instrument != '') {
+							var lotSize = contract.get(instrument);
+							if(lotSize != undefined)
+								$('#lotSize').val(lotSize);
 						}
 					});
 					$("select#type").change(function() {

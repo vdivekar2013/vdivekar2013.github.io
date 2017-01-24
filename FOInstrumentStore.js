@@ -22,6 +22,9 @@ define('FOInstrumentStore',['FOInstrument'], function(FOInstrument) {
 					count++;
 				}
 			}
+			array.sort(function(a,b) {
+				return a.name.localeCompare(b.name); 
+			});
 			return array;
 		},
 		'loadArray' : function(array) {
