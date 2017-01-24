@@ -134,7 +134,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '')
 							rowArray.push(totalPL);
-						rowArray.push(numberFormatter(currentPrice,0));
+						rowArray.push(Math.round(currentPrice));
 						totalPL = 0;
 						headerInstrument = foArray[h2].name;
 					}
