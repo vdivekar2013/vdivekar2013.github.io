@@ -49,6 +49,18 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 		}
 		return num.toFixed(digits).replace(rx, "$1");
 	};
+	var roundPrice = function(price) {
+		return Math.round(price);
+	}
+	var roundTick = function(tick) {
+		var tickArray = [ 0.25,0.5,0.75,1.0,2.5,5,7.5,10,25,50,75,100,250,500,750,1000,2500,5000,7500,10000];
+		for(var i = 0; i < tickArray.length; i++)
+			if(tick <= tickArray[i]) {
+				return (i == 0 || (tickArray[i-1] - tick) > (tick - tickArray[i])) ? tickArray[i] : tickArray[i-1];
+			}
+		return tick;
+	}
+
 	return {
 		'show' : function() {
 			var foArray = foInstrumentStore.getArray();
@@ -129,20 +141,20 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 				for (var h2 = 0; h2 < foArray.length; h2++) {
 					if(headerInstrument != foArray[h2].name) {
 						centralStrike = foArray[h2].centralStrike;
-						down20Percent = centralStrike - centralStrike * 20 / 100;
-						twoPercent =  centralStrike * 2 / 100;
+						down20Percent = roundPrice(centralStrike - centralStrike * 25 / 100);
+						twoPercent =  roundTick(centralStrike * 2 / 100);
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '')
-							rowArray.push(totalPL);
-						rowArray.push(Math.round(currentPrice));
+							rowArray.push(totalPL.toFixed(2));
+						rowArray.push(currentPrice.toFixed(2));
 						totalPL = 0;
 						headerInstrument = foArray[h2].name;
 					}
 					totalPL += profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
 					grandTotal += totalPL;
 				}
-				rowArray.push(totalPL);
-				rowArray.push(grandTotal);
+				rowArray.push(totalPL.toFixed(2));
+				rowArray.push(grandTotal.toFixed(2));
 				valueArray.push(rowArray);
 			}
 			var headDiv = '';
@@ -156,7 +168,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 				for(var n=0; n < lineArray.length; n++) {
 					cellDiv += '<td class="text-right">'
 						+ lineArray[n]
-						+ '</td>';
+					+ '</td>';
 				}
 				rowDiv += '<tr>' + cellDiv + '</tr>';
 			}
