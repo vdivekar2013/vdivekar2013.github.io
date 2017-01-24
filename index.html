@@ -154,6 +154,7 @@
 						var keys = contract.getKeyArray();
 						$('#instrument').autocomplete({ source: keys });
 						$("#lotSize").attr('readonly',true); 
+						$("#centralStrike").attr('readonly',true); 
 						$('#input').show();
 						console.log('contracts - ' + JSON.stringify(keys));
 					}
@@ -236,8 +237,10 @@
 						var instrument = $('#instrument').val().trim();
 						if(instrument != '') {
 							var lotSize = contract.get(instrument);
-							if(lotSize != undefined)
+							if(lotSize != undefined) {
 								$('#lotSize').val(lotSize);
+								$('#centralStrike').val(Math.round(650000/lotSize));
+							}
 						}
 					});
 					$("select#type").change(function() {
