@@ -1,5 +1,5 @@
 define('FOInstrument',function(){
-    return function FOInstrument(exchange,id,name,type,strikePrice,action,price,lotSize,centralStrike) {
+    return function FOInstrument(exchange,id,name,type,strikePrice,action,price,lotSize,centralStrike,active) {
     	this.exchange = exchange;
     	this.id = id;
     	this.name = name;
@@ -9,5 +9,6 @@ define('FOInstrument',function(){
     	this.price = price;
     	this.lotSize = lotSize;
     	this.centralStrike = centralStrike;
+    	this.active = active;
     };
 });

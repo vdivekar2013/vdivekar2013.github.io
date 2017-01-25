@@ -48,7 +48,7 @@ define('FOInstrumentStore',['FOInstrument'], function(FOInstrument) {
 							delete this[key];
 					for(var i = 0; i < array.length; i++)
 						if(array[i] instanceof Object) {
-							this[array[i].id] = new FOInstrument(array[i].exchange,array[i].id,array[i].name,array[i].type,array[i].strikePrice,array[i].action,array[i].price,array[i].lotSize,array[i].centralStrike);
+							this[array[i].id] = new FOInstrument(array[i].exchange,array[i].id,array[i].name,array[i].type,array[i].strikePrice,array[i].action,array[i].price,array[i].lotSize,array[i].centralStrike,array[i].active);
 						}
 				}
 			}

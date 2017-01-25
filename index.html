@@ -11,7 +11,7 @@
 <!-- <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
 <script src="jquery-ui.js"></script>
  -->
- <!-- <script
+<!-- <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 
 <style>
@@ -21,11 +21,11 @@
 
 .compute_button {
 	float: right;
-	margin-bottom:10px;
+	margin-bottom: 10px;
 }
 
 .output_table {
-	clear:both;
+	clear: both;
 }
 </style>
 </head>
@@ -50,12 +50,12 @@
 	<div id="group" class="container-fluid">
 		<div class="row">
 			<div class="col-md-3">
-				<div id="input" style="display:none">
+				<div id="input" style="display: none">
 					<form id="addForm" class="add_form">
 						<div class="form-group row ui-widget">
 							<label class="sr-only" for="instrument">Instrument:</label>
 							<div class="col-md-10">
-								<input type="text" class="form-control" id="instrument"
+								<input style="text-transform: uppercase" type="text" class="form-control" id="instrument"
 									placeholder="Instrument name">
 							</div>
 						</div>
@@ -112,7 +112,7 @@
 						<button type="button"
 							class="btn btn-primary col-md-1 compute_button"
 							id="computeButton" disabled="disabled">Compute</button>
-					<div style="clear:both"></div>
+						<div style="clear: both"></div>
 					</div>
 				</div>
 				<div id="outputArea">
@@ -182,10 +182,23 @@
 										var exchange = 'NSE';
 										var lotSize = $('#lotSize').val();
 										var centralStrike = $('#centralStrike').val();
-										var id = 'key' + (foInstrumentStore.length() + 1);
+										var foArray = foInstrumentStore.getArray();
+										var keyNo = 0, found = false;
+										do {
+											keyNo += 1;
+											found = false;
+											for(var i = 0; i < foArray.length; i++) {
+												if(('key' + keyNo).localeCompare(foArray[i].id) == 0) {
+													found = true;
+													break;
+												}
+											}
+										} while(found == true);
+										var id = 'key' + keyNo;
+										console.log('new key added is ' + id);
 										var price = $('#price').val();
 										var name = $('#instrument').val()
-										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike);
+										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true);
 										foInstrumentStore.add(id,foInst);
 										instrumentTable.show();
 										foInstrumentStore.save();
@@ -221,6 +234,16 @@
 							instrumentTable.compute();
 						}
 					});
+					$('#instrumentReference').on('change','#active',function() {
+						var id =  $(this).data('id');
+						console.log('Checkbox clicked with data ' + id);
+						var foInstrument = foInstrumentStore.get(id);
+						if(foInstrument != undefined) {
+							foInstrument.active = $(this).is(':checked');
+							foInstrumentStore.save();
+							instrumentTable.compute();
+						}
+					});
 					$('#computeButton').click(function() {
 						instrumentTable.compute();
 					});
@@ -234,12 +257,15 @@
 						}
 					});
 					$('#instrument').focusout(function() {
-						var instrument = $('#instrument').val().trim();
+						var instrument = $('#instrument').val().trim().toUpperCase();
 						if(instrument != '') {
 							var lotSize = contract.get(instrument);
 							if(lotSize != undefined) {
 								$('#lotSize').val(lotSize);
 								$('#centralStrike').val(Math.round(650000/lotSize));
+							} else {
+								$('#lotSize').val('');
+								$('#centralStrike').val('');
 							}
 						}
 					});

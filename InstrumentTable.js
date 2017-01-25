@@ -1,6 +1,5 @@
 define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function(foInstrumentStore,foInstrument,$) {
 	var profitOrLoss = function(action,type,strikePrice,currentPrice,price,lotSize) {
-		console.log('i am here');
 		if(type == 'Future') {
 			if(action == 'Buy') {
 				return (currentPrice - price) * lotSize;
@@ -69,9 +68,13 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 			$('#instrumentTable').remove();
 			for(var i=0; i < foArray.length; i++) {
 				var foInstrument = foArray[i];
+				var checkStr = foArray[i].active == true ? 'checked' : '';
 				rowDiv += '<tr>'
 					+ '<td>'
 					+ (i+1)
+					+ '</td>'
+					+ '<td>'
+					+ '<input type="checkbox" id="active" data-id="' + foArray[i].id + '" ' + checkStr + '>'
 					+ '</td>'
 					+ '<td>'
 					+ foInstrument.name
@@ -92,12 +95,14 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 					+ '<a id="delete" data-key="' + foInstrument.id + '" href="#"><span class="glyphicon glyphicon-trash"></span></a>'
 					+ '</td>'
 					+ '</tr>';
+				console.log('rowdiv - ' + rowDiv);
 			}
 			tableDiv = '<table id="instrumentTable"\
 				class="table table-bordered table-condensed table-striped">\
 				<thead>\
 				<tr class="info">\
 				<th>No.</th>\
+				<th>Active</th>\
 				<th>Instrument</th>\
 				<th>Type</th>\
 				<th>Strike Price</th>\
@@ -150,7 +155,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','jquery'], function
 						totalPL = 0;
 						headerInstrument = foArray[h2].name;
 					}
-					totalPL += profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
+					totalPL += foArray[h2].active == false ? 0 : profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
 					grandTotal += totalPL;
 				}
 				rowArray.push(totalPL.toFixed(2));
