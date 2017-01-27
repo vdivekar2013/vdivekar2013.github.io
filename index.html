@@ -6,6 +6,7 @@
 <title>Trade Strategy Calculator</title>
 <script type="text/javascript" data-main="main" src="./require.js"></script>
 <link rel="stylesheet" href="jquery-ui.css">
+<link rel="stylesheet" href="dfm.css">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <!-- <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
@@ -13,21 +14,6 @@
  -->
 <!-- <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-
-<style>
-.add_form {
-	margin-bottom: 10px;
-}
-
-.compute_button {
-	float: right;
-	margin-bottom: 10px;
-}
-
-.output_table {
-	clear: both;
-}
-</style>
 </head>
 <body>
 	<nav class="navbar navbar-inverse">
@@ -55,7 +41,8 @@
 						<div class="form-group row ui-widget">
 							<label class="sr-only" for="instrument">Instrument:</label>
 							<div class="col-md-10">
-								<input style="text-transform: uppercase" type="text" class="form-control" id="instrument"
+								<input style="text-transform: uppercase" type="text"
+									class="form-control" id="instrument"
 									placeholder="Instrument name">
 							</div>
 						</div>
@@ -108,15 +95,24 @@
 			<div class="col-md-9">
 				<div id="instrumentArea">
 					<div class="table-responsive" id="instrumentReference"></div>
-					<div>
-						<button type="button"
-							class="btn btn-primary col-md-1 compute_button"
-							id="computeButton" disabled="disabled">Compute</button>
-						<div style="clear: both"></div>
-					</div>
 				</div>
 				<div id="outputArea">
-					<div class="table-responsive" id="outputReference"></div>
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#table">P
+								&amp; L Table</a></li>
+						<li><a data-toggle="tab" href="#graph">P &amp; L
+								Graphical</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="table" class="tab-pane fade in active chartarea">
+							<div class="table-responsive" id="outputReference"></div>
+						</div>
+						<div id="graph" class="tab-pane fade chartarea">
+							<div id="graphReference">
+								<canvas id="chart"></canvas>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -137,6 +133,7 @@
 		baseUrl : '.',
 		paths : {
 			'jquery' : 'jquery-3.1.0.min',
+			'chartjs' : 'Chart.bundle.min',
 			'jqueryui' : 'jquery-ui.min',
 			'bootstrap' : 'bootstrap.min'
 		},

@@ -1,0 +1,43 @@
+@CHARSET "ISO-8859-1";
+
+.add_form {
+	margin-bottom: 10px;
+}
+
+.compute_button {
+	float: right;
+	margin-bottom: 10px;
+}
+
+.output_table {
+	clear: both;
+}
+
+.chartarea {
+	min-height: 400px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 400px;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(255,255,255,0.4); 
+}
