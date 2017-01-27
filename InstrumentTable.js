@@ -120,26 +120,28 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 		},
 		'compute' : function() {
 			var foArray = foInstrumentStore.getArray();
+			var colorArray = ['blue','red','green','purple','black','teal','aqua','yellow','silver','FUCHSIA' ];
 			if(foArray.length == 0)
 				return;
 			$('#outputTable').remove();
 			// Form the table header - start
-			var headerArray = [];
+			var headerArray = [],legendArray = [];
 			var headerInstrument = '';
 			for (var h1 = 0; h1 < foArray.length; h1++) {
 				if(headerInstrument != foArray[h1].name) {
 					headerArray.push('Price');
 					headerInstrument = foArray[h1].name;
 					headerArray.push(foArray[h1].name);
+					legendArray.push(foArray[h1].name);
 				}
 			}
 			headerArray.push('Total');
 			// Form the table header - end
 
 			// Fill the profit and loss values - start
-			var valueArray = [],graphArray = [];
+			var valueArray = [],graphArray = [ [],[],[],[],[],[],[],[],[],[],[] ];
 			for(var h3 = 0; h3 < 20; h3++) {
-				var rowArray = [];
+				var rowArray = [],itemIndex=0;
 				headerInstrument = '';
 				var centralStrike,down20Percent,twoPercent,currentPrice;
 				var totalPL = 0,grandTotal = 0;
@@ -151,6 +153,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '') {
 							rowArray.push(totalPL.toFixed(2));
+							graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
+							itemIndex++;
 						}
 						rowArray.push(currentPrice.toFixed(2));
 						totalPL = 0;
@@ -161,7 +165,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				}
 				rowArray.push(totalPL.toFixed(2));
 				rowArray.push(grandTotal.toFixed(2));
-				graphArray.push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
+				graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
 				valueArray.push(rowArray);
 			}
 			var headDiv = '';
@@ -193,33 +197,37 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 			$('#outputReference').append(tableDiv);
 			var ctx = $('#chart');
 			console.log('graphArray - ' + JSON.stringify(graphArray));
+			var dataSetArray = [];
+			for(var k=0; k < legendArray.length && k < 10; k++) {
+				dataSetArray.push({
+						label: legendArray[k],
+						lineTension: 0,
+						data: graphArray[k],
+						borderColor: colorArray[k],
+						backgroundColor: 'white',
+						fill: false,
+						borderWidth: '1px',
+						pointBackgroundColor: colorArray[k],
+						pointRadius: 0
+					});
+			}
 			var myChart = new Chart(ctx, {
 				type: 'line',
 				data: {
 					label: 'P and L',
-					datasets: [{
-						label: 'Total',
-						lineTension: 0,
-						data: graphArray,
-						borderColor: 'Blue',
-						//borderWidth: '1px',
-						pointBackgroundColor: 'white',
-						pointRadius: 0
-					}]
+					datasets: dataSetArray
 				},
 				options: {
 					legend: {
-						display: false
+						display: true,
+						fill: false
 					},
 					scales: {
 						yAxes: [{
 							display: true,
 							ticks: {
-								beginAtZero:false/*,
-								callback: function(value, index, values) {
-									return numberFormatter(value,1);
-								}*/,
-								fontSize: 8,
+								beginAtZero:false,
+								fontSize: 12,
 								maxTicksLimit:10
 							},
 							gridLines: {
@@ -232,7 +240,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 							display: true,
 							ticks: {
 								beginAtZero:false,
-								fontSize: 8,
+								fontSize: 12,
 								maxTicksLimit:20
 							},
 							gridLines: {
@@ -248,7 +256,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				}
 			});
 			Chart.defaults.global.defaultFontFamily = '"Lucida Console", "Monaco", "monospace"';
-			Chart.defaults.global.defaultFontColor = 'white';
+			Chart.defaults.global.defaultFontColor = 'black';
 		}
 	};
 });

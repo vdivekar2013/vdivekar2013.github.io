@@ -3,7 +3,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trade Strategy Calculator</title>
+<title>Derivative Trade Strategy Calculator</title>
 <script type="text/javascript" data-main="main" src="./require.js"></script>
 <link rel="stylesheet" href="jquery-ui.css">
 <link rel="stylesheet" href="dfm.css">
@@ -24,7 +24,7 @@
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" id="application" href="#">Trade Strategy
+				<a class="navbar-brand" id="application" href="#">Derivative Strategy
 					Calculator</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
@@ -108,9 +108,7 @@
 							<div class="table-responsive" id="outputReference"></div>
 						</div>
 						<div id="graph" class="tab-pane fade chartarea">
-							<div id="graphReference">
 								<canvas id="chart"></canvas>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -194,7 +192,7 @@
 										var id = 'key' + keyNo;
 										console.log('new key added is ' + id);
 										var price = $('#price').val();
-										var name = $('#instrument').val()
+										var name = $('#instrument').val().toUpperCase();
 										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true);
 										foInstrumentStore.add(id,foInst);
 										instrumentTable.show();

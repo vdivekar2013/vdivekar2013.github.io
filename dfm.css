@@ -16,12 +16,14 @@
 .chartarea {
 	min-height: 400px;
 	overflow-y: auto;
-	overflow-x: hidden;
+	overflow-x: auto;
 	max-height: 400px;
+	padding: 5px;
 }
 
 ::-webkit-scrollbar {
     width: 7px;
+    height: 7px;
 }
  
 /* Track */
