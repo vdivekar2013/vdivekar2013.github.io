@@ -136,6 +136,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				}
 			}
 			headerArray.push('Total');
+			if(legendArray.length > 1)
+				legendArray.push('Total');
 			// Form the table header - end
 
 			// Fill the profit and loss values - start
@@ -167,6 +169,9 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				grandTotal += totalPL;
 				rowArray.push(grandTotal.toFixed(2));
 				graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
+				if(legendArray.length > 1)
+					graphArray[itemIndex+1].push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
+
 				valueArray.push(rowArray);
 			}
 			var headDiv = '';
@@ -205,7 +210,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 						lineTension: 0,
 						data: graphArray[k],
 						borderColor: colorArray[k],
-						backgroundColor: 'white',
+						backgroundColor: colorArray[k],
 						fill: false,
 						borderWidth: '1px',
 						pointBackgroundColor: colorArray[k],
@@ -219,6 +224,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					datasets: dataSetArray
 				},
 				options: {
+					responsive: true,
+					maintainAspectRatio: false,
 					legend: {
 						display: true,
 						fill: false
