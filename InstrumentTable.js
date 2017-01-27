@@ -152,6 +152,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 						twoPercent =  roundTick(centralStrike * 2 / 100);
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '') {
+							grandTotal += totalPL;
 							rowArray.push(totalPL.toFixed(2));
 							graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
 							itemIndex++;
@@ -161,9 +162,9 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 						headerInstrument = foArray[h2].name;
 					}
 					totalPL += foArray[h2].active == false ? 0 : profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
-					grandTotal += totalPL;
 				}
 				rowArray.push(totalPL.toFixed(2));
+				grandTotal += totalPL;
 				rowArray.push(grandTotal.toFixed(2));
 				graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
 				valueArray.push(rowArray);
