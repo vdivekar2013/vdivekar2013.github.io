@@ -88,7 +88,7 @@
 							</div>
 						</div>
 						<div class="form-group row">
-							<button type="button" style="margin-left:15px;margin-bottom:0px" class="btn btn-primary col-md-3"
+							<button type="submit" style="margin-left:15px;margin-bottom:0px" class="btn btn-primary col-md-3"
 								id="addButton" disabled="disabled">Add</button>
 						</div>
 					</form>
@@ -149,7 +149,12 @@
 					foInstrumentStore.load();
 					var onSuccess = function() {
 						var keys = contract.getKeyArray();
-						$('#instrument').autocomplete({ source: keys });
+						$('#instrument').autocomplete({ source: function( request, response ) {
+						     var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
+						     response( $.grep( keys, function( item ){
+						       return matcher.test( item );
+						     }) );
+						   } });
 						$("#lotSize").attr('readonly',true); 
 						$("#centralStrike").attr('readonly',true); 
 						$('#input').show();

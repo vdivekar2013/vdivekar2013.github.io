@@ -204,18 +204,20 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 			var ctx = $('#chart');
 			console.log('graphArray - ' + JSON.stringify(graphArray));
 			var dataSetArray = [];
-			for(var k=0; k < legendArray.length && k < 10; k++) {
+			for(var k=0; k < legendArray.length && k < 10; k++) {	
 				dataSetArray.push({
 						label: legendArray[k],
-						lineTension: 0,
+						lineTension: 0.2,
 						data: graphArray[k],
 						borderColor: colorArray[k],
 						backgroundColor: colorArray[k],
 						fill: false,
-						borderWidth: '1px',
 						pointBackgroundColor: colorArray[k],
 						pointRadius: 0
 					});
+				if(legendArray[k] != 'Total')
+					dataSetArray[k].borderWidth = '1px';
+
 			}
 			var myChart = new Chart(ctx, {
 				type: 'line',
