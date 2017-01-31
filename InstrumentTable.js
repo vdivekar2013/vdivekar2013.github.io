@@ -132,10 +132,18 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					headerArray.push('Price');
 					headerInstrument = foArray[h1].name;
 					headerArray.push(foArray[h1].name);
-					legendArray.push(foArray[h1].name);
 				}
 			}
 			headerArray.push('Total');
+			headerInstrument = '';
+			for (h1 = 0; h1 < foArray.length; h1++) {
+				if(foArray[h1].active == false)
+					continue;
+				if(headerInstrument != foArray[h1].name) {
+					headerInstrument = foArray[h1].name;
+					legendArray.push(foArray[h1].name);
+				}
+			}
 			if(legendArray.length > 1)
 				legendArray.push('Total');
 			// Form the table header - end
@@ -146,7 +154,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				var rowArray = [],itemIndex=0;
 				headerInstrument = '';
 				var centralStrike,down20Percent,twoPercent,currentPrice;
-				var totalPL = 0,grandTotal = 0;
+				var totalPL = 0,grandTotal = 0,active=false;
 				for (var h2 = 0; h2 < foArray.length; h2++) {
 					if(headerInstrument != foArray[h2].name) {
 						centralStrike = foArray[h2].centralStrike;
@@ -156,23 +164,30 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 						if(headerInstrument != '') {
 							grandTotal += totalPL;
 							rowArray.push(totalPL.toFixed(2));
-							graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
-							itemIndex++;
+							if(active == true) {
+								graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
+								itemIndex++;
+							}
 						}
 						rowArray.push(currentPrice.toFixed(2));
 						totalPL = 0;
+						active = false;
 						headerInstrument = foArray[h2].name;
 					}
+					active |= foArray[h2].active;
 					totalPL += foArray[h2].active == false ? 0 : profitOrLoss(foArray[h2].action,foArray[h2].type,foArray[h2].strikePrice,currentPrice,foArray[h2].price,foArray[h2].lotSize);
 				}
-				rowArray.push(totalPL.toFixed(2));
-				grandTotal += totalPL;
-				rowArray.push(grandTotal.toFixed(2));
-				graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
-				if(legendArray.length > 1)
-					graphArray[itemIndex+1].push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
-
-				valueArray.push(rowArray);
+				if(foArray.length != 0) {
+					rowArray.push(totalPL.toFixed(2));
+					grandTotal += totalPL;
+					rowArray.push(grandTotal.toFixed(2));
+					if(active != false)
+						graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
+					if(legendArray.length > 1)
+						graphArray[itemIndex+1].push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
+	
+					valueArray.push(rowArray);
+				}
 			}
 			var headDiv = '';
 			for(var k=0; k < headerArray.length; k++) {
