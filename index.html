@@ -118,6 +118,9 @@
 			</div>
 		</div>
 	</div>
+	<div class="status">
+		<div class="marquee"><div><span id="span1"></span><span id="span2"></span></div></div>
+	</div>
 	<div id="about" style="display: none">
 		<div class="well">
 			<p>Trade strategy calculator calculates the profit and loss at
@@ -145,8 +148,8 @@
 		}
 	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','jquery','jqueryui','bootstrap' ],
-				function(foInstrument, foInstrumentStore, instrumentTable,contract, $,autocomplete) {
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','jquery','jqueryui','bootstrap' ],
+				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,$,autocomplete) {
 					foInstrumentStore.load();
 					var onSuccess = function() {
 						var keys = contract.getKeyArray();
@@ -170,6 +173,11 @@
 					}
 					instrumentTable.show();
 					instrumentTable.compute();
+					var repeat = function(doAgain) {
+							marketData.call();
+							setTimeout(repeat, 30000, true);
+					};
+					repeat();
 					$('#addButton')
 							.click(
 									function() {
