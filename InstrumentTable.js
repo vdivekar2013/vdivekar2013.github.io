@@ -158,8 +158,12 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				for (var h2 = 0; h2 < foArray.length; h2++) {
 					if(headerInstrument != foArray[h2].name) {
 						centralStrike = foArray[h2].centralStrike;
-						down20Percent = centralStrike - 10 * foArray[h2].tickSize; //roundPrice(centralStrike - centralStrike * 25 / 100);
-						twoPercent =  foArray[h2].tickSize; //roundTick(centralStrike * 2 / 100);
+						var divisor = 1;
+						do {
+							down20Percent = centralStrike - 10 * foArray[h2].tickSize / divisor;
+							twoPercent =  foArray[h2].tickSize / divisor;
+							divisor *= 2;
+						} while(down20Percent < 0);
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '') {
 							grandTotal += totalPL;
@@ -183,6 +187,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					rowArray.push(grandTotal.toFixed(2));
 					if(active != false)
 						graphArray[itemIndex].push({ x: h3, y: parseFloat(totalPL.toFixed(2))});
+					else
+						itemIndex--;
 					if(legendArray.length > 1)
 						graphArray[itemIndex+1].push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
 	
