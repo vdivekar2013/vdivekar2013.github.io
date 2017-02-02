@@ -158,8 +158,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				for (var h2 = 0; h2 < foArray.length; h2++) {
 					if(headerInstrument != foArray[h2].name) {
 						centralStrike = foArray[h2].centralStrike;
-						down20Percent = roundPrice(centralStrike - centralStrike * 25 / 100);
-						twoPercent =  roundTick(centralStrike * 2 / 100);
+						down20Percent = centralStrike - 10 * foArray[h2].tickSize; //roundPrice(centralStrike - centralStrike * 25 / 100);
+						twoPercent =  foArray[h2].tickSize; //roundTick(centralStrike * 2 / 100);
 						currentPrice = down20Percent + twoPercent * h3;
 						if(headerInstrument != '') {
 							grandTotal += totalPL;

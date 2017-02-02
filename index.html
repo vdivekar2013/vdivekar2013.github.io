@@ -148,8 +148,8 @@
 		}
 	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','jquery','jqueryui','bootstrap' ],
-				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,$,autocomplete) {
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','jquery','jqueryui','bootstrap' ],
+				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,$,autocomplete) {
 					foInstrumentStore.load();
 					var onSuccess = function() {
 						var keys = contract.getKeyArray();
@@ -209,7 +209,8 @@
 										console.log('new key added is ' + id);
 										var price = $('#price').val();
 										var name = $('#instrument').val().toUpperCase();
-										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true);
+										var conData = contract.get(name);
+										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true,conData.tickSize);
 										foInstrumentStore.add(id,foInst);
 										instrumentTable.show();
 										foInstrumentStore.save();
@@ -270,10 +271,11 @@
 					$('#instrument').focusout(function() {
 						var instrument = $('#instrument').val().trim().toUpperCase();
 						if(instrument != '') {
-							var lotSize = contract.get(instrument);
+							var data = contract.get(instrument);
+							var lotSize = data.lotSize;
 							if(lotSize != undefined) {
 								$('#lotSize').val(lotSize);
-								$('#centralStrike').val(Math.round(650000/lotSize));
+								$('#centralStrike').val(data.centralStrike); //Math.round(650000/lotSize));
 							} else {
 								$('#lotSize').val('');
 								$('#centralStrike').val('');
