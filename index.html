@@ -88,14 +88,20 @@
 							</div>
 						</div>
 						<div class="form-group row">
-							<button type="submit" style="margin-left:15px;margin-bottom:0px" class="btn btn-primary col-md-3"
-								id="addButton" disabled="disabled">Add</button>
+							<button type="submit"
+								style="margin-left: 15px; margin-bottom: 0px"
+								class="btn btn-primary col-md-3" id="addButton"
+								disabled="disabled">Add</button>
 						</div>
 					</form>
 				</div>
-				<div><iframe width="100%" height="293" src="https://www.youtube.com/embed?listType=search&list=cnbc-tv18&autoplay=1" allowfullscreen></iframe></div>
+				<div id="video" style="display: none">
+					<iframe width="100%" height="293"
+						src="https://www.youtube.com/embed?listType=search&list=cnbc-tv18&autoplay=1"
+						allowfullscreen></iframe>
+				</div>
 			</div>
-			<div class="col-md-9">
+			<div id="output" class="col-md-9" style="display: none">
 				<div id="instrumentArea" class="instrumentarea">
 					<div class="table-responsive" id="instrumentReference"></div>
 				</div>
@@ -118,8 +124,12 @@
 			</div>
 		</div>
 	</div>
-	<div class="status">
-		<div class="marquee"><div><span id="span1"></span><span id="span2"></span></div></div>
+	<div class="status" style="display: none">
+		<div class="marquee">
+			<div>
+				<span id="span1"></span><span id="span2"></span>
+			</div>
+		</div>
 	</div>
 	<div id="about" style="display: none">
 		<div class="well">
@@ -139,18 +149,59 @@
 			'jquery' : 'jquery-3.1.0.min',
 			'chartjs' : 'Chart.bundle.min',
 			'jqueryui' : 'jquery-ui.min',
-			'bootstrap' : 'bootstrap.min'
+			'bootstrap' : 'bootstrap.min',
+			'Facebook': '//connect.facebook.net/en_US/sdk'
 		},
 		shim : {
 			/* Set bootstrap dependencies (just jQuery) */
 			'jqueryui' : [ 'jquery' ],
-		    'bootstrap' : [ 'jquery' ]
+		    'bootstrap' : [ 'jquery' ],
+		    'Facebook' : {
+		        exports: 'FB'
+		      }
 		}
 	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','jquery','jqueryui','bootstrap' ],
-				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,$,autocomplete) {
-					foInstrumentStore.load();
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','jquery','jqueryui','bootstrap' ],
+				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,$,autocomplete) {
+				  facebook.init({
+					    appId      : '1384515718278362',
+					    cookie     : true,
+					    xfbml      : true,
+					    version    : 'v2.8'
+					  });
+				  var status = undefined;
+				  facebook.getLoginStatus(function(response) {
+				  		console.log('status is --- ' + response.status);
+				  		status = response.status;
+					    console.log('Facebook response --- ' + response);
+					});
+				  if(status != 'connected') {
+				  	facebook.login(function(response) {
+				  		if(response.status == 'connected') {
+				  			$('#video').show();
+				  			$('#output').show();
+				  			$('#status').show();
+				  		} else
+				  			return;
+				  		facebook.logout();
+						foInstrumentStore.load();
+						contract.call(onSuccess);
+						var rowNumber = foInstrumentStore.length();
+						if(rowNumber != 0) {
+							$('#computeButton').removeAttr('disabled'); 
+						} else {
+							$('#computeButton').attr('disabled', 'disabled');					
+						}
+						instrumentTable.show();
+						instrumentTable.compute();
+						var repeat = function(doAgain) {
+								marketData.call();
+								setTimeout(repeat, 30000, true);
+						};
+						repeat();
+				  	});
+				   }
 					var onSuccess = function() {
 						var keys = contract.getKeyArray();
 						$('#instrument').autocomplete({ source: function( request, response ) {
@@ -164,20 +215,6 @@
 						$('#input').show();
 						console.log('contracts - ' + JSON.stringify(keys));
 					}
-					contract.call(onSuccess);
-					var rowNumber = foInstrumentStore.length();
-					if(rowNumber != 0) {
-						$('#computeButton').removeAttr('disabled'); 
-					} else {
-						$('#computeButton').attr('disabled', 'disabled');					
-					}
-					instrumentTable.show();
-					instrumentTable.compute();
-					var repeat = function(doAgain) {
-							marketData.call();
-							setTimeout(repeat, 30000, true);
-					};
-					repeat();
 					$('#addButton')
 							.click(
 									function() {
