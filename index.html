@@ -28,7 +28,8 @@
 					Strategy Calculator</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
-				<ul class="nav navbar-nav">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="fb-login-button" data-size="large" data-show-faces="false" data-auto-logout-link="false" data-onlogin="initialize()" style="margin-top:12px;display:none"></li>
 				</ul>
 			</div>
 		</div>
@@ -165,26 +166,18 @@
 				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','jquery','jqueryui','bootstrap' ],
 				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,$,autocomplete) {
 				  facebook.init({
-					    appId      : '1384515718278362',
+					    appId      : '1384515718278362', //'1780528768937392', //
 					    cookie     : true,
 					    xfbml      : true,
 					    version    : 'v2.8'
 					  });
 				  var status = undefined;
-				  facebook.getLoginStatus(function(response) {
-				  		console.log('status is --- ' + response.status);
-				  		status = response.status;
-					    console.log('Facebook response --- ' + response);
-					});
-				  if(status != 'connected') {
-				  	facebook.login(function(response) {
-				  		if(response.status == 'connected') {
-				  			$('#video').show();
-				  			$('#output').show();
-				  			$('#status').show();
-				  		} else
-				  			return;
-				  		facebook.logout();
+				  this.initialize = function() {
+			  			$('.fb-login-button').hide();
+			  			$('#video').show();
+			  			$('#output').show();
+			  			$('#status').show();
+			  			facebook.logout();
 						foInstrumentStore.load();
 						contract.call(onSuccess);
 						var rowNumber = foInstrumentStore.length();
@@ -200,8 +193,23 @@
 								setTimeout(repeat, 30000, true);
 						};
 						repeat();
+				  }
+				  facebook.getLoginStatus(function(response) {
+				  		console.log('status is --- ' + response.status);
+				  		status = response.status;
+					    console.log('Facebook response --- ' + response);
+					});
+				  if(status != 'connected') {
+				  	facebook.login(function(response) {
+				  		if(response.status == 'connected') {
+				  			initialize();
+				  		} else {
+				  			$('.fb-login-button').show();
+				  			return;
+				  		}
 				  	});
-				   }
+				   } else
+				  		initialize();
 					var onSuccess = function() {
 						var keys = contract.getKeyArray();
 						$('#instrument').autocomplete({ source: function( request, response ) {
