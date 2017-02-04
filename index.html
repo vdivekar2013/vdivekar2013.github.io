@@ -198,6 +198,7 @@
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
 				  this.fbLogout = function() {
 				        FB.logout(function (response) {
+				        	$('#fbLogout').hide();
 				  			$('.fb-login-button').show();
 				  			$('#video').hide();
 				  			$('#output').hide();
