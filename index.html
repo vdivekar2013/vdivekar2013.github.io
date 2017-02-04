@@ -33,6 +33,9 @@
 						data-show-faces="false" data-auto-logout-link="false"
 						data-onlogin="initialize()"
 						style="margin-top: 12px; display: none"></li>
+					<li id="fbLogout" onclick="fbLogout()" style="display: none"><a
+						class="fb_button fb_button_medium"><span
+							class="fb_button_text">Logout</span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -193,6 +196,15 @@
 						  firebase.initializeApp(config);
 				  var status = undefined;
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
+				  this.fbLogout() = function() {
+				        FB.logout(function (response) {
+				  			$('.fb-login-button').show();
+				  			$('#video').hide();
+				  			$('#output').hide();
+				  			$('#statusbar').hide();
+				  			$('#input').hide();
+				        });
+				    }
 				  this.initialize = function() {
 			  			$('.fb-login-button').hide();
 			  			$('#video').show();
@@ -209,7 +221,7 @@
 							}
 							instrumentTable.show();
 							instrumentTable.compute();
-							var repeat = function(doAgain) {
+							var repeat = function() {
 									marketData.call();
 									setTimeout(repeat, 30000, true);
 							};
@@ -225,14 +237,14 @@
 				  	facebook.login(function(response) {
 				  		if(response.status == 'connected') {
 				  			console.log('user is connected');
-				  			//initialize();
+				  			$('#fbLogout').show();
 				  		} else {
 				  			$('.fb-login-button').show();
 				  			return;
 				  		}
 				  	});
-				   } /* else
-				  		initialize(); */
+				   }  else
+					   $('#fbLogout').show(); 
 				  function checkLoginState(event) {
 					  if (event.authResponse) {
 					    // User is signed-in Facebook.
