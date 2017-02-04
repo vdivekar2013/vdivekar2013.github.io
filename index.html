@@ -196,7 +196,7 @@
 						  firebase.initializeApp(config);
 				  var status = undefined;
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
-				  this.fbLogout() = function() {
+				  this.fbLogout = function() {
 				        FB.logout(function (response) {
 				  			$('.fb-login-button').show();
 				  			$('#video').hide();
