@@ -121,9 +121,12 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 		'compute' : function() {
 			var foArray = foInstrumentStore.getArray();
 			var colorArray = ['blue','red','green','purple','black','teal','aqua','yellow','silver','FUCHSIA' ];
+			$('#outputTable').remove();
+			var myChart = $('#chart').data('chart');
+			if(myChart != undefined)
+				myChart.destroy();
 			if(foArray.length == 0)
 				return;
-			$('#outputTable').remove();
 			// Form the table header - start
 			var headerArray = [],legendArray = [];
 			var headerInstrument = '';
@@ -240,7 +243,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					dataSetArray[k].borderWidth = '1px';
 
 			}
-			var myChart = new Chart(ctx, {
+			myChart = new Chart(ctx, {
 				type: 'line',
 				data: {
 					label: 'P and L',
@@ -288,6 +291,7 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 			});
 			Chart.defaults.global.defaultFontFamily = '"Lucida Console", "Monaco", "monospace"';
 			Chart.defaults.global.defaultFontColor = 'black';
+			$('#chart').data('chart',myChart);
 		}
 	};
 });

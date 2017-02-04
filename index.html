@@ -29,7 +29,10 @@
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav navbar-right">
-					<li class="fb-login-button" data-size="large" data-show-faces="false" data-auto-logout-link="false" data-onlogin="initialize()" style="margin-top:12px;display:none"></li>
+					<li class="fb-login-button" data-size="large"
+						data-show-faces="false" data-auto-logout-link="false"
+						data-onlogin="initialize()"
+						style="margin-top: 12px; display: none"></li>
 				</ul>
 			</div>
 		</div>
@@ -124,11 +127,16 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="status" style="display: none">
-		<div class="marquee">
-			<div>
-				<span id="span1"></span><span id="span2"></span>
+		<div id="statusbar" class="row" style="display: none">
+			<div class="col-md-12">
+				<div class="status">
+					<div class="marquee">
+						<div>
+							<span class="small" id="span1"></span><span class="small"
+								id="span2"></span>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -151,7 +159,8 @@
 			'chartjs' : 'Chart.bundle.min',
 			'jqueryui' : 'jquery-ui.min',
 			'bootstrap' : 'bootstrap.min',
-			'Facebook': '//connect.facebook.net/en_US/sdk'
+			'Facebook': '//connect.facebook.net/en_US/sdk',
+			'Firebase' : '//www.gstatic.com/firebasejs/3.6.2/firebase'
 		},
 		shim : {
 			/* Set bootstrap dependencies (just jQuery) */
@@ -159,40 +168,53 @@
 		    'bootstrap' : [ 'jquery' ],
 		    'Facebook' : {
 		        exports: 'FB'
+		      },
+		    'Firebase': {
+		        exports: 'firebase'
 		      }
 		}
 	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','jquery','jqueryui','bootstrap' ],
-				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,$,autocomplete) {
+				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','jquery','jqueryui','bootstrap' ],
+				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,$,autocomplete) {
 				  facebook.init({
-					    appId      : '1384515718278362', //'1780528768937392', //
+					    appId      : '1780528768937392', //'1384515718278362', //
 					    cookie     : true,
 					    xfbml      : true,
 					    version    : 'v2.8'
 					  });
+				  var config = {
+						    apiKey: "AIzaSyAywQWorGwIG20HIvQ5vfcoG63NnKJXi0Q",
+						    authDomain: "nitrohub-9226a.firebaseapp.com",
+						    databaseURL: "https://nitrohub-9226a.firebaseio.com",
+						    storageBucket: "nitrohub-9226a.appspot.com",
+						    messagingSenderId: "611854173714"
+						  };
+						  firebase.initializeApp(config);
 				  var status = undefined;
+				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
 				  this.initialize = function() {
 			  			$('.fb-login-button').hide();
 			  			$('#video').show();
 			  			$('#output').show();
-			  			$('#status').show();
-			  			facebook.logout();
-						foInstrumentStore.load();
-						contract.call(onSuccess);
-						var rowNumber = foInstrumentStore.length();
-						if(rowNumber != 0) {
-							$('#computeButton').removeAttr('disabled'); 
-						} else {
-							$('#computeButton').attr('disabled', 'disabled');					
-						}
-						instrumentTable.show();
-						instrumentTable.compute();
-						var repeat = function(doAgain) {
-								marketData.call();
-								setTimeout(repeat, 30000, true);
-						};
-						repeat();
+			  			$('#statusbar').show();
+			  			//facebook.logout();
+						foInstrumentStore.load(foInstrumentStore,function() {
+							contract.call(onSuccess);
+							var rowNumber = foInstrumentStore.length();
+							if(rowNumber != 0) {
+								$('#computeButton').removeAttr('disabled'); 
+							} else {
+								$('#computeButton').attr('disabled', 'disabled');					
+							}
+							instrumentTable.show();
+							instrumentTable.compute();
+							var repeat = function(doAgain) {
+									marketData.call();
+									setTimeout(repeat, 30000, true);
+							};
+							repeat();
+						});
 				  }
 				  facebook.getLoginStatus(function(response) {
 				  		console.log('status is --- ' + response.status);
@@ -202,15 +224,61 @@
 				  if(status != 'connected') {
 				  	facebook.login(function(response) {
 				  		if(response.status == 'connected') {
-				  			initialize();
+				  			console.log('user is connected');
+				  			//initialize();
 				  		} else {
 				  			$('.fb-login-button').show();
 				  			return;
 				  		}
 				  	});
-				   } else
-				  		initialize();
-					var onSuccess = function() {
+				   } /* else
+				  		initialize(); */
+				  function checkLoginState(event) {
+					  if (event.authResponse) {
+					    // User is signed-in Facebook.
+					    var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+					      unsubscribe();
+					      // Check if we are already signed-in Firebase with the correct user.
+					      if (!isUserEqual(event.authResponse, firebaseUser)) {
+					        // Build Firebase credential with the Facebook auth token.
+					        var credential = firebase.auth.FacebookAuthProvider.credential(
+					            event.authResponse.accessToken);
+					        // Sign in with the credential from the Facebook user.
+					        firebase.auth().signInWithCredential(credential).catch(function(error) {
+					          // Handle Errors here.
+					          var errorCode = error.code;
+					          var errorMessage = error.message;
+					          // The email of the user's account used.
+					          var email = error.email;
+					          // The firebase.auth.AuthCredential type that was used.
+					          var credential = error.credential;
+					          // ...
+					        }).then(function() { initialize(); });
+					        //initialize();
+					      } else {
+					        // User is already signed-in Firebase with the correct user.
+					    	  initialize();
+					      }
+					    });
+					  } else {
+					    // User is signed-out of Facebook.
+					    firebase.auth().signOut();
+					  }
+					}
+				  function isUserEqual(facebookAuthResponse, firebaseUser) {
+					  if (firebaseUser) {
+					    var providerData = firebaseUser.providerData;
+					    for (var i = 0; i < providerData.length; i++) {
+					      if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
+					          providerData[i].uid === facebookAuthResponse.userID) {
+					        // We don't need to re-auth the Firebase connection.
+					        return true;
+					      }
+					    }
+					  }
+					  return false;
+					}
+				  var onSuccess = function() {
 						var keys = contract.getKeyArray();
 						$('#instrument').autocomplete({ source: function( request, response ) {
 						     var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
@@ -279,16 +347,16 @@
 						var rowNumber = foInstrumentStore.length();
 						if(rowNumber == 0) {
 							$('#instrument').attr('readonly', false);
-							$('#lotSize').attr('readonly', false);
-							$('#centralStrike').attr('readonly', false);
+							/* $('#lotSize').attr('readonly', false);
+							$('#centralStrike').attr('readonly', false); */
 							$('#instrument').val('');
 							$('#lotSize').val('');
 							$('#centralStrike').val('');
 							$('#computeButton').attr('disabled', 'disabled');
 							$('#outputTable').remove();
-						} else {
+						} /* else { */
 							instrumentTable.compute();
-						}
+						/* } */
 					});
 					$('#instrumentReference').on('change','#active',function() {
 						var id =  $(this).data('id');
