@@ -52,7 +52,7 @@ define('Contract',['ContractData','jquery'],function(ContractData,$) {
 	    	var array = new Array();
 			var count = 0;
 			for(var key in self) {
-				if(self[key] instanceof Object) {
+				if(self[key] instanceof ContractData) {
 					array[count] = self[key];
 					count++;
 				}
@@ -63,7 +63,7 @@ define('Contract',['ContractData','jquery'],function(ContractData,$) {
 	    	var array = new Array();
 			var count = 0;
 			for(var key in self) {
-				if(self[key] instanceof Object) {
+				if(self[key] instanceof ContractData) {
 					array[count] = key;
 					count++;
 				}
