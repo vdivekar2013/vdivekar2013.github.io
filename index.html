@@ -178,22 +178,10 @@
 		}
 	});
 		require(
-				[ 'FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','jquery','jqueryui','bootstrap' ],
-				function(foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,$,autocomplete) {
-				  facebook.init({
-					    appId      : '1384515718278362', //'1780528768937392', //
-					    cookie     : true,
-					    xfbml      : true,
-					    version    : 'v2.8'
-					  });
-				  var config = {
-						    apiKey: "AIzaSyAywQWorGwIG20HIvQ5vfcoG63NnKJXi0Q",
-						    authDomain: "nitrohub-9226a.firebaseapp.com",
-						    databaseURL: "https://nitrohub-9226a.firebaseio.com",
-						    storageBucket: "nitrohub-9226a.appspot.com",
-						    messagingSenderId: "611854173714"
-						  };
-						  firebase.initializeApp(config);
+				[ 'Config','FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','jquery','jqueryui','bootstrap' ],
+				function(config,foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,$,autocomplete) {
+				  facebook.init(config.getFacebookConfig(config.mode));
+				  firebase.initializeApp(config.getFirebaseConfig(config.mode));
 				  var status = undefined;
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
 				  this.fbLogout = function() {
