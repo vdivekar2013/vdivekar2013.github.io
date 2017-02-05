@@ -173,7 +173,6 @@
 			/* Set bootstrap dependencies (just jQuery) */
 			'jqueryui' : [ 'jquery' ],
 		    'bootstrap' : [ 'jquery' ],
-		    'firechat-ui' : ['jquery'],
 		    'underscore' : {
 		        exports: '_'
 		      },
@@ -184,6 +183,7 @@
 		        exports: 'firebase'
 		      },
 	      	'firechat-ui': {
+	      		deps: ['jquery'],
 		        exports: 'FirechatUI'
 		      } 
 		}
