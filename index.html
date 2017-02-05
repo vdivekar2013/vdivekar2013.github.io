@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="dfm.css">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
 <!-- <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
 <script src="jquery-ui.js"></script>
  -->
@@ -107,6 +108,8 @@
 						src="https://www.youtube.com/embed?listType=search&list=cnbc-tv18&autoplay=1"
 						allowfullscreen></iframe>
 				</div>
+				<div id="firechat-wrapper" style="width:100%;height:400px;height-min:400px;display: none">
+				</div>
 			</div>
 			<div id="output" class="col-md-9" style="display: none">
 				<div id="instrumentArea" class="instrumentarea">
@@ -163,23 +166,30 @@
 			'jqueryui' : 'jquery-ui.min',
 			'bootstrap' : 'bootstrap.min',
 			'Facebook': '//connect.facebook.net/en_US/sdk',
-			'Firebase' : '//www.gstatic.com/firebasejs/3.6.2/firebase'
+			'Firebase' : '//www.gstatic.com/firebasejs/3.6.2/firebase',
+			'firechat-ui' : '//cdn.firebase.com/libs/firechat/3.0.1/firechat.min'
 		},
 		shim : {
 			/* Set bootstrap dependencies (just jQuery) */
 			'jqueryui' : [ 'jquery' ],
 		    'bootstrap' : [ 'jquery' ],
+		    'underscore' : {
+		        exports: '_'
+		      },
 		    'Facebook' : {
 		        exports: 'FB'
 		      },
 		    'Firebase': {
 		        exports: 'firebase'
-		      }
+		      },
+	      	'firechat-ui': {
+		        exports: 'FirechatUI'
+		      } 
 		}
 	});
 		require(
-				[ 'Config','FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','jquery','jqueryui','bootstrap' ],
-				function(config,foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,$,autocomplete) {
+				[ 'Config','FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','firechat-ui','jquery','jqueryui','bootstrap' ],
+				function(config,foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,firechatui,$,autocomplete) {
 				  facebook.init(config.getFacebookConfig(config.mode));
 				  firebase.initializeApp(config.getFirebaseConfig(config.mode));
 				  var status = undefined;
@@ -192,6 +202,7 @@
 				  			$('#output').hide();
 				  			$('#statusbar').hide();
 				  			$('#input').hide();
+				  			$('#firechat-wrapper').hide();
 				        });
 				    }
 				  this.initialize = function() {
@@ -199,6 +210,7 @@
 			  			$('#fbLogout').show();
 			  			$('#video').show();
 			  			$('#output').show();
+			  			$('#firechat-wrapper').show();
 			  			$('#statusbar').show();
 			  			//facebook.logout();
 						foInstrumentStore.load(foInstrumentStore,function() {
@@ -217,6 +229,16 @@
 							};
 							repeat();
 						});
+				  }
+				  function initChat(user) {
+				        // Get a Firebase Database ref
+				        var chatRef = firebase.database().ref("chat");
+
+				        // Create a Firechat instance
+				        var chat = new firechatui(chatRef, document.getElementById("firechat-wrapper"));
+
+				        // Set the Firechat user
+				        chat.setUser(user.uid, user.displayName);
 				  }
 				  facebook.getLoginStatus(function(response) {
 				  		console.log('status is --- ' + response.status);
@@ -255,11 +277,12 @@
 					          // The firebase.auth.AuthCredential type that was used.
 					          var credential = error.credential;
 					          // ...
-					        }).then(function() { initialize(); });
+					        }).then(function() { initialize();initChat(firebase.auth().currentUser); });
 					        //initialize();
 					      } else {
 					        // User is already signed-in Firebase with the correct user.
 					    	  initialize();
+					    	  initChat(firebaseUser);
 					      }
 					    });
 					  } else {
