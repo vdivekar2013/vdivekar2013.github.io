@@ -198,28 +198,42 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					valueArray.push(rowArray);
 				}
 			}
-			var headDiv = '';
+			var headDiv = '<tr class="info">';
 			for(var k=0; k < headerArray.length; k++) {
-				headDiv += '<th class="text-center">' + headerArray[k] + '</th>';
+				if(headerArray[k] == 'Price')
+					continue;
+				if(headerArray[k] == 'Total')
+					headDiv	+= '<th class="text-center" colspan="1">' + headerArray[k] + '</th>';
+				else
+					headDiv	+= '<th class="text-center" colspan="2">' + headerArray[k] + '</th>';
 			}
+			headDiv += '</tr><tr class="info">';
+			for(k=0; k < headerArray.length; k++) {
+				if(headerArray[k] == 'Total')
+					headDiv += '<th class="text-center"></th>';
+				else if(headerArray[k] != 'Price')
+					headDiv += '<th class="text-center">Subtotal</th>';
+				else
+					headDiv += '<th class="text-center">' + headerArray[k] + '</th>';
+			}
+			headDiv += '</tr>'
 			var rowDiv = '';
 			for(var m=0; m < valueArray.length; m++) {
 				var cellDiv = '';
 				var lineArray = valueArray[m];
 				for(var n=0; n < lineArray.length; n++) {
-					cellDiv += '<td class="text-right">'
-						+ lineArray[n]
-					+ '</td>';
+					if(lineArray[n] < 0)
+						cellDiv += '<td class="text-right danger">' + lineArray[n]	+ '</td>';
+					else
+						cellDiv += '<td class="text-right success">' + lineArray[n]	+ '</td>';
 				}
 				rowDiv += '<tr>' + cellDiv + '</tr>';
 			}
 			tableDiv = '<table id="outputTable"\
 				class="table table-bordered table-condensed table-striped">\
-				<thead>\
-				<tr class="info">' +
+				<thead>' +
 				headDiv +
-				'</tr>\
-				</thead>\
+				'</thead>\
 				<tbody>' +
 				rowDiv +
 				'</tbody>\
