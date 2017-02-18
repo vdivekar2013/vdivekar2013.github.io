@@ -1,11 +1,12 @@
-define('MarketData',['FOInstrumentStore','jquery'],function(foInstrumentStore,$) {
+define('MarketData',['StoreArray', 'FOInstrumentStore','jquery'],function(storeArray,foInstrumentStore,$) {
 	this.logResults = function(json) {
 		console.log((new Date()).toLocaleTimeString() + ' In callback ' + JSON.stringify(json));
 	};
 	var legendArray = [];
 	return {
-		'call' : function() {
-			var foArray = foInstrumentStore.getArray();
+		'call' : function(panelId) {
+			var foStore = storeArray.get(panelId);
+			var foArray = foStore.getArray();
 			if(foArray.length == 0)
 				return;
 			legendArray = [];

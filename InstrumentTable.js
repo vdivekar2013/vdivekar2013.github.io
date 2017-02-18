@@ -1,4 +1,4 @@
-define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery'], function(foInstrumentStore,foInstrument,Chart,$) {
+define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chartjs','jquery'], function(storeArray,foInstrumentStore,foInstrument,Chart,$) {
 	var profitOrLoss = function(action,type,strikePrice,currentPrice,price,lotSize) {
 		if(type == 'Future') {
 			if(action == 'Buy') {
@@ -61,11 +61,12 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 	}
 
 	return {
-		'show' : function() {
-			var foArray = foInstrumentStore.getArray();
+		'show' : function(panelId) {
+			var foStore = storeArray.get(panelId);
+			var foArray = foStore.getArray();
 			console.log('instrument array length is ' + foArray.length);
 			var rowDiv = '';
-			$('#instrumentTable').remove();
+			$('#table-' + panelId).remove();
 			for(var i=0; i < foArray.length; i++) {
 				var foInstrument = foArray[i];
 				var checkStr = foArray[i].active == true ? 'checked' : '';
@@ -97,8 +98,8 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 					+ '</tr>';
 				console.log('rowdiv - ' + rowDiv);
 			}
-			tableDiv = '<table id="instrumentTable"\
-				class="table table-bordered table-condensed table-striped">\
+			tableDiv = '<table id="table-' + panelId + '" \
+				class="table table-bordered table-condensed table-striped insTable">\
 				<thead>\
 				<tr class="info">\
 				<th>No.</th>\
@@ -116,10 +117,11 @@ define('InstrumentTable',['FOInstrumentStore','FOInstrument','chartjs','jquery']
 				'</tbody>\
 				</table>';
 			console.log('table DIV is ' + tableDiv);
-			$('#instrumentReference').append(tableDiv);
+			$('#ref-' + panelId).append(tableDiv);
 		},
-		'compute' : function() {
-			var foArray = foInstrumentStore.getArray();
+		'compute' : function(panelId) {
+			var foStore = storeArray.get(panelId);
+			var foArray = foStore.getArray();
 			var colorArray = ['blue','red','green','purple','black','teal','aqua','yellow','silver','FUCHSIA' ];
 			$('#outputTable').remove();
 			var myChart = $('#chart').data('chart');

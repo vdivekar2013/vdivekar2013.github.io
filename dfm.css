@@ -13,6 +13,9 @@
 
 }
 
+.insTable {
+	margin: 0px;
+}
 .compute_button {
 	float: right;
 	margin-bottom: 10px;
@@ -23,18 +26,58 @@
 }
 
 .instrumentarea {
-	min-height: 200px;
-	overflow-y: auto;
-	overflow-x: auto;
-	max-height: 200px;
-	padding: 5px;
 	border-color: slategray;
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 5px 5px 5px 5px;
 	margin-bottom: 10px;
+	margin-top: 0px;
 }
 
+.instrument-tabs-area {
+	min-height: 200px;
+	overflow-y: auto;
+	overflow-x: auto;
+	max-height: 200px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px;
+}
+
+#dialog label, #dialog input {
+	display: block;
+}
+
+#dialog label {
+	margin-top: 0.5em;
+}
+
+#dialog input, #dialog textarea {
+	width: 95%;
+}
+
+#tabs {
+	margin-top: 0em;
+}
+
+#tabs li .ui-icon-close {
+	float: left;
+	margin: 0.4em 0.2em 0 0;
+	cursor: pointer;
+}
+
+#tabs li .ui-icon-plus {
+	float: left;
+	margin: 0.4em 0.2em 0 0;
+	cursor: pointer;
+}
+
+#add_tab {
+	cursor: pointer;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding: 0em 0em 0em 0em;
+}
 .chartarea {
 	min-height: 400px;
 	overflow-y: auto;

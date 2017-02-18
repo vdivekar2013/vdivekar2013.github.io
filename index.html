@@ -9,12 +9,8 @@
 <link rel="stylesheet" href="dfm.css">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
-<!-- <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
-<script src="jquery-ui.js"></script>
- -->
-<!-- <script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+<link rel="stylesheet"
+	href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
 </head>
 <body>
 	<nav class="navbar navbar-inverse">
@@ -42,83 +38,98 @@
 		</div>
 	</nav>
 	<div id="group" class="container-fluid">
+		<div id="dialog" title="Add Strategy" style="display: none">
+			<form>
+				<fieldset class="ui-helper-reset">
+					<label for="tab_title">Name</label> <input type="text"
+						name="tab_title" id="tab_title"
+						class="ui-widget-content ui-corner-all">
+				</fieldset>
+			</form>
+		</div>
 		<div class="row">
 			<div class="col-md-3">
-			<div id="accordion" style="display: none">
- 			 <h3>Add Contract</h3>
-				<div class="input" id="input">
-					<form id="addForm" class="add_form">
-						<div class="form-group row ui-widget">
-							<label class="sr-only" for="instrument">Instrument:</label>
-							<div class="col-md-10">
-								<input style="text-transform: uppercase" type="text"
-									class="form-control" id="instrument"
-									placeholder="Stock / Index">
+				<div id="accordion" style="display: none">
+					<h3>Add Contract</h3>
+					<div class="input" id="input">
+						<form id="addForm" class="add_form">
+							<div class="form-group row ui-widget">
+								<label class="sr-only" for="instrument">Instrument:</label>
+								<div class="col-md-10">
+									<input style="text-transform: uppercase" type="text"
+										class="form-control" id="instrument"
+										placeholder="Stock / Index">
+								</div>
 							</div>
-						</div>
-						<div class="form-group row ">
-							<label class="sr-only" for="instrument">LotSize:</label>
-							<div class="col-md-6">
-								<input type="number" class="form-control" id="lotSize"
-									placeholder="Lot Size" readonly="readonly">
+							<div class="form-group row ">
+								<label class="sr-only" for="instrument">LotSize:</label>
+								<div class="col-md-6">
+									<input type="number" class="form-control" id="lotSize"
+										placeholder="Lot Size" readonly="readonly">
+								</div>
+								<div class="col-md-6">
+									<input type="number" class="form-control" id="centralStrike"
+										placeholder="Central Strike">
+								</div>
 							</div>
-							<div class="col-md-6">
-								<input type="number" class="form-control" id="centralStrike"
-									placeholder="Central Strike">
+							<div class="form-group row">
+								<label class="sr-only" for="type">Instrument Type:</label>
+								<div class="col-md-10">
+									<select class="form-control" id="type">
+										<option id="future" value="Future">Future</option>
+										<option id="call" value="Call Option">Option ( Call )</option>
+										<option id="put" value="Put Option">Option ( Put )</option>
+									</select>
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="sr-only" for="type">Instrument Type:</label>
-							<div class="col-md-10">
-								<select class="form-control" id="type">
-									<option id="future" value="Future">Future</option>
-									<option id="call" value="Call Option">Option ( Call )</option>
-									<option id="put" value="Put Option">Option ( Put )</option>
-								</select>
+							<div class="form-group row">
+								<label class="sr-only" for="strike">StrikePrice:</label>
+								<div class="col-md-6">
+									<input type="number" class="form-control" id="strike"
+										placeholder="Strike price">
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="sr-only" for="strike">StrikePrice:</label>
-							<div class="col-md-6">
-								<input type="number" class="form-control" id="strike"
-									placeholder="Strike price">
+							<div class="form-group">
+								<label class="radio-inline"><input title="Buy" id="buy"
+									type="radio" name="optradio" checked>Buy</label> <label
+									class="radio-inline"><input title="Sell" id="sell"
+									type="radio" name="optradio">Sell</label>
 							</div>
-						</div>
-						<div class="form-group">
-							<label class="radio-inline"><input title="Buy" id="buy"
-								type="radio" name="optradio" checked>Buy</label> <label
-								class="radio-inline"><input title="Sell" id="sell"
-								type="radio" name="optradio">Sell</label>
-						</div>
-						<div class="form-group row">
-							<label class="sr-only" for="price">Price:</label>
-							<div class="col-md-8">
-								<input type="number" class="form-control" id="price"
-									placeholder="Instrument price">
+							<div class="form-group row">
+								<label class="sr-only" for="price">Price:</label>
+								<div class="col-md-8">
+									<input type="number" class="form-control" id="price"
+										placeholder="Instrument price">
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<button type="submit"
-								style="margin-left: 15px; margin-bottom: 0px"
-								class="btn btn-primary col-md-3" id="addButton"
-								disabled="disabled">Add</button>
-						</div>
-					</form>
-				</div>
- 			 	<h3>CNBC TV18</h3>
-				<div id="video">
-					<iframe width="100%" height="293"
-						src="https://www.youtube.com/embed?listType=search&list=cnbc-tv18&autoplay=1"
-						allowfullscreen></iframe>
-				</div>
- 			 	<h3>Chat with Friend</h3>
-				<div id="firechat-wrapper" style="width:100%">
-				</div>
+							<div class="form-group row">
+								<button type="submit"
+									style="margin-left: 15px; margin-bottom: 0px"
+									class="btn btn-primary col-md-3" id="addButton"
+									disabled="disabled">Add</button>
+							</div>
+						</form>
+					</div>
+					<h3>CNBC TV18</h3>
+					<div id="video">
+						<iframe width="100%" height="293"
+							src="https://www.youtube.com/embed?listType=search&list=cnbc-tv18&autoplay=1"
+							allowfullscreen></iframe>
+					</div>
+					<h3>Chat with Friend</h3>
+					<div id="firechat-wrapper" style="width: 100%"></div>
 				</div>
 			</div>
 			<div id="output" class="col-md-9" style="display: none">
-				<div id="instrumentArea" class="instrumentarea">
-					<div class="table-responsive" id="instrumentReference"></div>
+				<div id="tabs" class="instrumentarea">
+					<ul>
+						<li><a href="#tabs-1">Add</a> <span
+							class="ui-icon ui-icon-plus" role="presentation">Remove
+								Tab</span></li>
+					</ul>
+					<div id="tabs-1" class="instrument-tabs-area">
+						<!-- <div class="table-responsive" id="instrumentReference"></div> -->
+					</div>
 				</div>
 				<div id="outputArea">
 					<ul class="nav nav-tabs">
@@ -194,14 +205,18 @@
 		}
 	});
 		require(
-				[ 'Config','FOInstrument', 'FOInstrumentStore', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','firechat-ui','jquery','jqueryui','bootstrap' ],
-				function(config,foInstrument, foInstrumentStore, instrumentTable,contract,marketData,contractData,facebook,firebase,firechatui,$,autocomplete) {
+				[ 'Config','FOInstrument', 'FOInstrumentStore','StoreArray', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','firechat-ui','jquery','jqueryui','bootstrap' ],
+				function(config,foInstrument, foInstrumentStore,storeArray, instrumentTable,contract,marketData,contractData,facebook,firebase,firechatui,$,autocomplete) {
 				  facebook.init(config.getFacebookConfig(config.mode));
 				  firebase.initializeApp(config.getFirebaseConfig(config.mode));
 				  var status = undefined;
+				  var isInitialized = false;
+				  var allowAdd = false;
+				  var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
 				  this.fbLogout = function() {
 				        FB.logout(function (response) {
+				        	isInitialized = false;
 				        	$('#accordion').hide();
 				        	$('#fbLogout').hide();
 				  			$('.fb-login-button').show();
@@ -213,6 +228,8 @@
 				        });
 				    }
 				  this.initialize = function() {
+					    if(isInitialized == true) return;
+					    isInitialized = true;
 			  			$('.fb-login-button').hide();
 			  			$('#fbLogout').show();
 			  			//$('#video').show();
@@ -221,18 +238,14 @@
 			  			$('#statusbar').show();
 			        	$('#accordion').show();
 			  			//facebook.logout();
-						foInstrumentStore.load(foInstrumentStore,function() {
+						storeArray.load(storeArray,function() {
 							contract.call(onSuccess);
-							var rowNumber = foInstrumentStore.length();
-							if(rowNumber != 0) {
-								$('#computeButton').removeAttr('disabled'); 
-							} else {
-								$('#computeButton').attr('disabled', 'disabled');					
-							}
-							instrumentTable.show();
-							instrumentTable.compute();
+							var rowNumber = storeArray.length();
+							addInitialTabs();
 							var repeat = function() {
-									marketData.call();
+									var panelId = $("ul>.ui-tabs-active").attr('aria-controls');
+									if(panelId != 'tabs-1') 
+										marketData.call(panelId);
 									setTimeout(repeat, 30000, true);
 							};
 							repeat();
@@ -327,6 +340,7 @@
 					$('#addButton')
 							.click(
 									function() {
+										var panelId = $("ul>.ui-tabs-active").attr('aria-controls');
 										var sel = $("select option:selected")
 												.val();
 										var strike = sel != 'Future' ? $(
@@ -339,7 +353,8 @@
 										var exchange = 'NSE';
 										var lotSize = $('#lotSize').val();
 										var centralStrike = $('#centralStrike').val();
-										var foArray = foInstrumentStore.getArray();
+										var foStore = storeArray.get(panelId);
+										var foArray = foStore.getArray();
 										var keyNo = 0, found = false;
 										do {
 											keyNo += 1;
@@ -357,11 +372,11 @@
 										var name = $('#instrument').val().toUpperCase();
 										var conData = contract.get(name);
 										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true,conData.tickSize);
-										foInstrumentStore.add(id,foInst);
-										instrumentTable.show();
-										foInstrumentStore.save();
+										foStore.add(id,foInst);
+										instrumentTable.show(panelId);
+										storeArray.save();
 										$('#addForm')[0].reset();
-										var array = foInstrumentStore.getArray();
+										var array = foStore.getArray();
 										var foFirstInst = array[0];
 										$('#instrument').val(name);
 										$('#lotSize').val(lotSize);
@@ -369,15 +384,16 @@
 										$('#strike').hide();
 										$('#strike').val('100');
 										$('#addButton').attr('disabled', 'disabled');
-										instrumentTable.compute();
-										$('#computeButton').removeAttr('disabled'); 
+										instrumentTable.compute(panelId);
 									});
-					$('#instrumentReference').on('click','#delete',function() {
+					$('#tabs').on('click','#delete',function() {
+						var panelId = $("ul>.ui-tabs-active").attr('aria-controls');;
+						var foStore = storeArray.get(panelId);
 						console.log('Delete link clicked with data ' + $(this).data('key'));
-						foInstrumentStore.delete($(this).data('key'));
-						foInstrumentStore.save();
-						instrumentTable.show();
-						var rowNumber = foInstrumentStore.length();
+						foStore.delete($(this).data('key'));
+						storeArray.save();
+						instrumentTable.show(panelId);
+						var rowNumber = foStore.length();
 						if(rowNumber == 0) {
 							$('#instrument').attr('readonly', false);
 							/* $('#lotSize').attr('readonly', false);
@@ -388,22 +404,35 @@
 							$('#computeButton').attr('disabled', 'disabled');
 							$('#outputTable').remove();
 						} /* else { */
-							instrumentTable.compute();
+							instrumentTable.compute(panelId);
 						/* } */
 					});
-					$('#instrumentReference').on('change','#active',function() {
+					$('#tabs').on('change','#active',function() {
+						var panelId = $("ul>.ui-tabs-active").attr('aria-controls');;
+						var foStore = storeArray.get(panelId);
 						var id =  $(this).data('id');
 						console.log('Checkbox clicked with data ' + id);
-						var foInstrument = foInstrumentStore.get(id);
+						var foInstrument = foStore.get(id);
 						if(foInstrument != undefined) {
 							foInstrument.active = $(this).is(':checked');
-							foInstrumentStore.save();
-							instrumentTable.compute();
+							storeArray.save();
+							instrumentTable.compute(panelId);
 						}
 					});
-					$('#computeButton').click(function() {
-						instrumentTable.compute();
-					});
+
+			    function addInitialTabs() {
+				    	var tabs = $( "#tabs" ).tabs();
+				    	var array = storeArray.getArray();
+				    	if(array.length == 0) return;
+					    for(var i=0; i < array.length; i++) {
+					      var label = array[i].key;
+					      var li = $( tabTemplate.replace( /#\{href\}/g, "#" + label ).replace( /#\{label\}/g, label ) );
+					      tabs.find( ".ui-tabs-nav" ).append( li );
+					      tabs.append( '<div id="' + label + '"  class="instrument-tabs-area"><div class="table-responsive" id="ref-' + label + '"></div></div>' );
+					      tabs.tabs( "refresh" );
+				    	}
+					    $( "#tabs" ).tabs( "option", "active", 1 );
+				    };
 					$('#application').click(function() {
 						if ($('#about').is(":visible")) {
 							$('#group').show();
@@ -471,6 +500,89 @@
 				            return false; // Cancels the default action
 				        }
 				    });
+					$( function() {
+					    var tabTitle = $( "#tab_title" ),
+					      tabContent = $( "#tab_content" );
+					    tabTitle.on('keypress', function(e) {
+					        if (e.which == 32)
+					            return false;
+					    });
+					    var tabs = $( "#tabs" ).tabs({ activate: function( event, ui ) {
+						    	console.log('panel ' + ui.newPanel.attr('id'));
+						    	if(ui.newPanel.attr('id') != 'tabs-1') {
+									instrumentTable.show(ui.newPanel.attr('id'));
+									instrumentTable.compute(ui.newPanel.attr('id'));
+									allowAdd = true;
+						    	} else
+						    		allowAdd = false;
+							}
+					    });
+					 
+					    // Modal dialog init: custom buttons and a "close" callback resetting the form inside
+					    var dialog = $( "#dialog" ).dialog({
+					      autoOpen: false,
+					      modal: true,
+					      buttons: {
+					        Add: function() {
+					          addTab();
+					          $( this ).dialog( "close" );
+					        },
+					        Cancel: function() {
+					          $( this ).dialog( "close" );
+					        }
+					      },
+					      close: function() {
+					        form[ 0 ].reset();
+					      }
+					    });
+					 
+					    // AddTab form: calls addTab function on submit and closes the dialog
+					    var form = dialog.find( "form" ).on( "submit", function( event ) {
+					      addTab();
+					      dialog.dialog( "close" );
+					      event.preventDefault();
+					    });
+					 
+					    // Actual addTab function: adds new tab using the input from the form above
+					    function addTab() {
+					    	if(tabTitle.val() == '' || storeArray.get(tabTitle.val()) != undefined) return;
+					      var label = tabTitle.val(),
+					        li = $( tabTemplate.replace( /#\{href\}/g, "#" + label ).replace( /#\{label\}/g, label ) );
+					 
+					      tabs.find( ".ui-tabs-nav" ).append( li );
+					      tabs.append( '<div id="' + label + '"  class="instrument-tabs-area"><div class="table-responsive" id="ref-' + label + '"></div></div>' );
+					      tabs.tabs( "refresh" );
+					      var tabsCount = $("#tabs >ul >li").size;
+					      $( "#tabs" ).tabs( "option", "active", tabsCount-1 );
+					      storeArray.add(label,new foInstrumentStore());
+					      storeArray.save();
+						  instrumentTable.show(label);
+						  instrumentTable.compute(label);
+					      
+					    }
+						 
+					    // AddTab button: just opens the dialog
+					    tabs.on( "click", "span.ui-icon-plus",function() {
+					        dialog.dialog( "open" );
+					      });
+
+		
+					    // Close icon: removing the tab on click
+					    tabs.on( "click", "span.ui-icon-close", function() {
+					      var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
+					      $( "#" + panelId ).remove();
+					      storeArray.delete(panelId);
+					      tabs.tabs( "refresh" );
+					    });
+					 
+					    tabs.on( "keyup", function( event ) {
+					      if ( event.altKey && event.keyCode === $.ui.keyCode.BACKSPACE ) {
+					        var panelId = tabs.find( ".ui-tabs-active" ).remove().attr( "aria-controls" );
+					        $( "#" + panelId ).remove();
+					        tabs.tabs( "refresh" );
+					      }
+					    });
+					  } );
 					(function() {
 						$('form#addForm input').keyup(function() {
 							var empty = false;
@@ -479,7 +591,7 @@
 									empty = true;
 								}
 							});
-
+							if(allowAdd == false) empty = true;
 							if (empty) {
 								$('#addButton').attr('disabled', 'disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
 							} else {
