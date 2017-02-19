@@ -212,6 +212,7 @@
 				  var status = undefined;
 				  var isInitialized = false;
 				  var allowAdd = false;
+				  var empty = true;
 				  var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
 				  facebook.Event.subscribe('auth.authResponseChange', checkLoginState);
 				  this.fbLogout = function() {
@@ -513,8 +514,15 @@
 									instrumentTable.show(ui.newPanel.attr('id'));
 									instrumentTable.compute(ui.newPanel.attr('id'));
 									allowAdd = true;
-						    	} else
+						    	} else {
 						    		allowAdd = false;
+						    		dialog.dialog( "open" );
+						    	}
+								if (empty || !allowAdd) {
+									$('#addButton').attr('disabled', 'disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
+								} else {
+									$('#addButton').removeAttr('disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
+								}
 							}
 					    });
 					 
@@ -585,14 +593,13 @@
 					  } );
 					(function() {
 						$('form#addForm input').keyup(function() {
-							var empty = false;
+							empty = false;
 							$('form#addForm input').each(function() {
 								if ($.trim($(this).val()) == '') {
 									empty = true;
 								}
 							});
-							if(allowAdd == false) empty = true;
-							if (empty) {
+							if (empty || !allowAdd) {
 								$('#addButton').attr('disabled', 'disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
 							} else {
 								$('#addButton').removeAttr('disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
