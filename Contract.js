@@ -22,6 +22,10 @@ define('Contract',['ContractData','jquery'],function(ContractData,$) {
 		    		if(fieldArray.length < 15 || fieldArray[1].toUpperCase() == 'SYMBOL')
 		    			continue;
 		    		var conData = self[fieldArray[1].trim()];
+		    		if(conData == undefined) {
+		    			console.log('undefined symbol ' + fieldArray[1].trim());
+		    			continue;
+		    		}
 		    		if(fieldArray[0].trim() == 'OPTIDX' || fieldArray[0].trim() == 'OPTSTK') {
 	    				if((conData.centralStrike == null) && (conData.settlementPrice < Number(fieldArray[3].trim())))
 	    					conData.centralStrike = Number(fieldArray[3].trim());
