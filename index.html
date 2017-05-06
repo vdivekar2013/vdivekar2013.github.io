@@ -55,10 +55,16 @@
 						<form id="addForm" class="add_form">
 							<div class="form-group row ui-widget">
 								<label class="sr-only" for="instrument">Instrument:</label>
-								<div class="col-md-10">
+								<div class="col-md-8">
 									<input style="text-transform: uppercase" type="text"
 										class="form-control" id="instrument"
 										placeholder="Stock / Index">
+								</div>
+								<label class="sr-only" for="quantity">Quantity:</label>
+								<div class="col-md-4">
+									<input type="number" min="1" 
+										class="form-control" id="quantity"
+										placeholder="Qty">
 								</div>
 							</div>
 							<div class="form-group row ">
@@ -353,6 +359,10 @@
 											action = 'Sell';
 										var exchange = 'NSE';
 										var lotSize = $('#lotSize').val();
+										var quantity = $('#quantity').val();
+										if($.trim(quantity) == '') quantity = 1;
+										if(quantity < 1) quantity = 1;
+										lotSize = lotSize * quantity;
 										var centralStrike = $('#centralStrike').val();
 										var foStore = storeArray.get(panelId);
 										var foArray = foStore.getArray();
@@ -380,7 +390,7 @@
 										var array = foStore.getArray();
 										var foFirstInst = array[0];
 										$('#instrument').val(name);
-										$('#lotSize').val(lotSize);
+										$('#lotSize').val(lotSize/quantity);
 										$('#centralStrike').val(centralStrike);
 										$('#strike').hide();
 										$('#strike').val('100');

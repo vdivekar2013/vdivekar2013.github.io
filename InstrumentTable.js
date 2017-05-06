@@ -93,6 +93,9 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 					+ foInstrument.price
 					+ '</td>'
 					+ '<td>'
+					+ foInstrument.lotSize
+					+ '</td>'
+					+ '<td>'
 					+ '<a id="delete" data-key="' + foInstrument.id + '" href="#"><span class="glyphicon glyphicon-trash"></span></a>'
 					+ '</td>'
 					+ '</tr>';
@@ -109,6 +112,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 				<th>Strike Price</th>\
 				<th>Action</th>\
 				<th>Instrument Price</th>\
+				<th>Quantity</th>\
 				<th>Delete</th>\
 				</tr>\
 				</thead>\
