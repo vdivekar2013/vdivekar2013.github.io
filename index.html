@@ -53,6 +53,14 @@
 					<h3>Add Contract</h3>
 					<div class="input" id="input">
 						<form id="addForm" class="add_form">
+							<div class="form-group row">
+								<label class="sr-only" for="type">Strategy Type:</label>
+								<div class="col-md-12">
+									<select class="form-control" id="strategy-type">
+										<option id="Generic-Single-leg" value="Generic-Single-leg">Generic - Single leg</option>
+									</select>
+								</div>
+							</div>
 							<div class="form-group row ui-widget">
 								<label class="sr-only" for="instrument">Instrument:</label>
 								<div class="col-md-8">
@@ -62,8 +70,7 @@
 								</div>
 								<label class="sr-only" for="quantity">Quantity:</label>
 								<div class="col-md-4">
-									<input type="number" min="1" 
-										class="form-control" id="quantity"
+									<input type="number" min="1" class="form-control" id="quantity"
 										placeholder="Qty">
 								</div>
 							</div>
@@ -78,35 +85,7 @@
 										placeholder="Central Strike">
 								</div>
 							</div>
-							<div class="form-group row">
-								<label class="sr-only" for="type">Instrument Type:</label>
-								<div class="col-md-10">
-									<select class="form-control" id="type">
-										<option id="future" value="Future">Future</option>
-										<option id="call" value="Call Option">Option ( Call )</option>
-										<option id="put" value="Put Option">Option ( Put )</option>
-									</select>
-								</div>
-							</div>
-							<div class="form-group row">
-								<label class="sr-only" for="strike">StrikePrice:</label>
-								<div class="col-md-6">
-									<input type="number" class="form-control" id="strike"
-										placeholder="Strike price">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="radio-inline"><input title="Buy" id="buy"
-									type="radio" name="optradio" checked>Buy</label> <label
-									class="radio-inline"><input title="Sell" id="sell"
-									type="radio" name="optradio">Sell</label>
-							</div>
-							<div class="form-group row">
-								<label class="sr-only" for="price">Price:</label>
-								<div class="col-md-8">
-									<input type="number" class="form-control" id="price"
-										placeholder="Instrument price">
-								</div>
+							<div id="strategy-content">
 							</div>
 							<div class="form-group row">
 								<button type="submit"
@@ -211,8 +190,8 @@
 		}
 	});
 		require(
-				[ 'Config','FOInstrument', 'FOInstrumentStore','StoreArray', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','firechat-ui','jquery','jqueryui','bootstrap' ],
-				function(config,foInstrument, foInstrumentStore,storeArray, instrumentTable,contract,marketData,contractData,facebook,firebase,firechatui,$,autocomplete) {
+				[ 'Config','Strategy','FOInstrument', 'FOInstrumentStore','StoreArray', 'InstrumentTable','Contract','MarketData','ContractData','Facebook','Firebase','firechat-ui','jquery','jqueryui','bootstrap' ],
+				function(config,strategy,foInstrument, foInstrumentStore,storeArray, instrumentTable,contract,marketData,contractData,facebook,firebase,firechatui,$,autocomplete) {
 				  facebook.init(config.getFacebookConfig(config.mode));
 				  firebase.initializeApp(config.getFirebaseConfig(config.mode));
 				  var status = undefined;
@@ -341,22 +320,23 @@
 						   } });
 						$("#lotSize").attr('readonly',true); 
 						$("#centralStrike").attr('readonly',true); 
+						var stratagy_selected;
+						$("select#strategy-type option:selected").each(function() {
+							stratagy_selected = $(this).val();
+						});
+
+						strategy.show(stratagy_selected);
 						//$('#input').show();
 						console.log('contracts - ' + JSON.stringify(keys));
 					}
 					$('#addButton')
 							.click(
 									function() {
+										var stratagy_selected;
+										$("select#strategy-type option:selected").each(function() {
+											stratagy_selected = $(this).val();
+										});
 										var panelId = $("ul>.ui-tabs-active").attr('aria-controls');
-										var sel = $("select option:selected")
-												.val();
-										var strike = sel != 'Future' ? $(
-												'#strike').val() : '';
-										var action;
-										if ($("#buy").prop('checked') == true)
-											action = 'Buy';
-										else
-											action = 'Sell';
 										var exchange = 'NSE';
 										var lotSize = $('#lotSize').val();
 										var quantity = $('#quantity').val();
@@ -379,11 +359,9 @@
 										} while(found == true);
 										var id = 'key' + keyNo;
 										console.log('new key added is ' + id);
-										var price = $('#price').val();
 										var name = $('#instrument').val().toUpperCase();
 										var conData = contract.get(name);
-										var foInst = new foInstrument(exchange,id,name,sel,strike,action,price,lotSize,centralStrike,true,conData.tickSize);
-										foStore.add(id,foInst);
+										strategy.process(stratagy_selected,foStore,exchange,id,name,lotSize,centralStrike,conData.tickSize);
 										instrumentTable.show(panelId);
 										storeArray.save();
 										$('#addForm')[0].reset();
@@ -392,8 +370,7 @@
 										$('#instrument').val(name);
 										$('#lotSize').val(lotSize/quantity);
 										$('#centralStrike').val(centralStrike);
-										$('#strike').hide();
-										$('#strike').val('100');
+										strategy.postProcess(stratagy_selected);
 										$('#addButton').attr('disabled', 'disabled');
 										instrumentTable.compute(panelId);
 									});
@@ -467,20 +444,6 @@
 							}
 						}
 					});
-					$("select#type").change(function() {
-						var str = "";
-						$("select option:selected").each(function() {
-							str = $(this).val();
-						});
-						if (str == 'Future') {
-							$('#strike').hide();
-							$('#strike').val('100');
-						} else {
-							$('#strike').show();
-							$('#strike').val('');
-							$('#addButton').attr('disabled', 'disabled');
-						}
-					}).trigger("change");
 					$('#accordion').accordion({
 				        collapsible:true,
 				        heightStyle: 'content',
@@ -602,7 +565,7 @@
 					    });
 					  } );
 					(function() {
-						$('form#addForm input').keyup(function() {
+						$('form#addForm').on('keyup','input',function() {
 							empty = false;
 							$('form#addForm input').each(function() {
 								if ($.trim($(this).val()) == '') {
@@ -615,7 +578,7 @@
 								$('#addButton').removeAttr('disabled'); // updated according to http://stackoverflow.com/questions/7637790/how-to-remove-disabled-attribute-with-jquery-ie
 							}
 						});
-					})()
+					})();
 				});
 	</script>
 </body>
