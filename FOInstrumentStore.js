@@ -45,7 +45,7 @@ define('FOInstrumentStore',['FOInstrument','Firebase'], function(FOInstrument,fi
 		};
 		
 		FOInstrumentStore.prototype.length = function() {
-			console.log('length = ' + Object.keys(this).length);
+			//console.log('length = ' + Object.keys(this).length);
 			return Object.keys(this).length;
 		};
 		

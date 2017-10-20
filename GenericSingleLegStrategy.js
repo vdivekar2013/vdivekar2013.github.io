@@ -67,7 +67,9 @@ define('GenericSingleLegStrategy',['StoreArray','FOInstrumentStore','FOInstrumen
 		'postProcess' : function(strageyType) {
 			$('#strategy-content').find('input#strike').val('100');
 			$('#strategy-content').find('input#strike').hide();
-			console.log('value of strike is' + $('#strategy-content').find('input#strike').val());			
-		}	
+		},
+		'refresh' : function(instrument) {
+			
+		}
 	}
 });

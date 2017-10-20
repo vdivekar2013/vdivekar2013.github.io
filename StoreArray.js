@@ -41,7 +41,7 @@ define('StoreArray',['FOInstrumentStore','FOInstrument','Firebase'], function(FO
 			firebase.database().ref('/users/' + userId + '/strategies/').once('value').then(function(snapshot) {
 				var array = snapshot.val();
 				if(array != null) {
-					console.log('Objects loaded are ' + JSON.stringify(array));
+					//console.log('Objects loaded are ' + JSON.stringify(array));
 					if(array instanceof Array) {
 						for(var key in self)
 							if(self[key] instanceof FOInstrumentStore)
@@ -72,8 +72,8 @@ define('StoreArray',['FOInstrumentStore','FOInstrument','Firebase'], function(FO
 						count++;
 					}
 				}
-				console.log(array.length + ' no records saved in foinstrumentFile');
-				console.log('foinstrumentFile saved object is ' + JSON.stringify(array));
+				//console.log(array.length + ' no records saved in foinstrumentFile');
+				//console.log('foinstrumentFile saved object is ' + JSON.stringify(array));
 				var user = firebase.auth().currentUser;
 				var userId = user.uid;
 				var database = firebase.database();

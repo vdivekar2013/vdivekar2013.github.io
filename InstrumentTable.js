@@ -64,7 +64,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 		'show' : function(panelId) {
 			var foStore = storeArray.get(panelId);
 			var foArray = foStore.getArray();
-			console.log('instrument array length is ' + foArray.length);
+			//console.log('instrument array length is ' + foArray.length);
 			var rowDiv = '';
 			$('#table-' + panelId).remove();
 			for(var i=0; i < foArray.length; i++) {
@@ -99,7 +99,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 					+ '<a id="delete" data-key="' + foInstrument.id + '" href="#"><span class="glyphicon glyphicon-trash"></span></a>'
 					+ '</td>'
 					+ '</tr>';
-				console.log('rowdiv - ' + rowDiv);
+				//console.log('rowdiv - ' + rowDiv);
 			}
 			tableDiv = '<table id="table-' + panelId + '" \
 				class="table table-bordered table-condensed table-striped insTable">\
@@ -120,7 +120,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 				rowDiv +
 				'</tbody>\
 				</table>';
-			console.log('table DIV is ' + tableDiv);
+			//console.log('table DIV is ' + tableDiv);
 			$('#ref-' + panelId).append(tableDiv);
 		},
 		'compute' : function(panelId) {
@@ -246,7 +246,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 				</table>';
 			$('#outputReference').append(tableDiv);
 			var ctx = $('#chart');
-			console.log('graphArray - ' + JSON.stringify(graphArray));
+			//console.log('graphArray - ' + JSON.stringify(graphArray));
 			var dataSetArray = [];
 			for(var k=0; k < legendArray.length && k < 10; k++) {	
 				dataSetArray.push({

@@ -58,6 +58,7 @@
 								<div class="col-md-12">
 									<select class="form-control" id="strategy-type">
 										<option id="Generic-Single-leg" value="Generic-Single-leg">Generic - Single leg</option>
+										<option id="Covered-call" value="Covered-call">Covered Call</option>
 									</select>
 								</div>
 							</div>
@@ -230,8 +231,8 @@
 							addInitialTabs();
 							var repeat = function() {
 									var panelId = $("ul>.ui-tabs-active").attr('aria-controls');
-									if(panelId != 'tabs-1') 
-										marketData.call(panelId);
+									//if(panelId != 'tabs-1') 
+									//	marketData.call(panelId);
 									setTimeout(repeat, 30000, true);
 							};
 							repeat();
@@ -327,7 +328,6 @@
 
 						strategy.show(stratagy_selected);
 						//$('#input').show();
-						console.log('contracts - ' + JSON.stringify(keys));
 					}
 					$('#addButton')
 							.click(
@@ -358,7 +358,7 @@
 											}
 										} while(found == true);
 										var id = 'key' + keyNo;
-										console.log('new key added is ' + id);
+										//console.log('new key added is ' + id);
 										var name = $('#instrument').val().toUpperCase();
 										var conData = contract.get(name);
 										strategy.process(stratagy_selected,foStore,exchange,id,name,lotSize,centralStrike,conData.tickSize);
@@ -373,6 +373,10 @@
 										strategy.postProcess(stratagy_selected);
 										$('#addButton').attr('disabled', 'disabled');
 										instrumentTable.compute(panelId);
+										$("select#strategy-type option:selected").each(function() {
+											stratagy_selected = $(this).val();
+										});
+										strategy.show(stratagy_selected);
 									});
 					$('#tabs').on('click','#delete',function() {
 						var panelId = $("ul>.ui-tabs-active").attr('aria-controls');;
@@ -442,7 +446,22 @@
 								$('#lotSize').val('');
 								$('#centralStrike').val('');
 							}
+							var stratagy_selected;
+							$("select#strategy-type option:selected").each(function() {
+								stratagy_selected = $(this).val();
+							});
+							strategy.refresh(stratagy_selected,instrument);
 						}
+					});
+					$('#strategy-type').change(function() {
+						var stratagy_selected;
+						$("select#strategy-type option:selected").each(function() {
+							stratagy_selected = $(this).val();
+						});
+						strategy.show(stratagy_selected);
+						console.log('Strategy selected is ' + stratagy_selected);
+						var instrument = $('#instrument').val().trim().toUpperCase();
+						strategy.refresh(stratagy_selected,instrument);
 					});
 					$('#accordion').accordion({
 				        collapsible:true,
