@@ -60,8 +60,43 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 		return tick;
 	}
 
-	return {
+	var self = {
 		'show' : function(panelId) {
+			$('#ref-' + panelId).on('click','.editable',function(e) {
+				var id = $(this).attr('id');
+				console.log('id is '+ id);
+				var value = $('#ref-' + panelId).find('#' + id).html();
+				e.stopPropagation(); //<-------stop the bubbling of the event here
+				updateVal(this,value);
+
+			});
+
+			var updateVal = function(currentEle,value) {
+				$(currentEle).removeClass('editable');
+				$(currentEle).html('<input class="thVal" width="100%" type="number" value="' + value + '" />');
+			    $(".thVal", currentEle).focus().keyup(function (event) {
+			        if (event.keyCode == 13) {
+			            $(currentEle).html($(".thVal").val().trim());
+			        }
+			    }).click(function(e) {
+			        e.stopPropagation();
+			    });
+
+			    $(document).click(function() {
+			    	$(currentEle).addClass('editable');
+			        $(".thVal").replaceWith(function() {
+				        var id =  $(currentEle).data('price');
+						var foInstrument = foStore.get(id);
+						console.log('id ' + id + ' old price ' + foInstrument.price);
+						foInstrument.price = this.value;
+						console.log('id ' + id + ' new price ' + foInstrument.price);
+						storeArray.save();
+						self.compute(panelId);
+			            return this.value;
+			        });
+			    });
+			}
+
 			var foStore = storeArray.get(panelId);
 			var foArray = foStore.getArray();
 			//console.log('instrument array length is ' + foArray.length);
@@ -89,7 +124,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 					+ '<td>'
 					+ foInstrument.action
 					+ '</td>'
-					+ '<td>'
+					+ '<td class="editable" data-price="' + foArray[i].id + '" id="id' + i+1 + '">'
 					+ foInstrument.price
 					+ '</td>'
 					+ '<td>'
@@ -102,24 +137,24 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 				//console.log('rowdiv - ' + rowDiv);
 			}
 			tableDiv = '<table id="table-' + panelId + '" \
-				class="table table-bordered table-condensed table-striped insTable">\
-				<thead>\
-				<tr class="info">\
-				<th>No.</th>\
-				<th>Active</th>\
-				<th>Instrument</th>\
-				<th>Type</th>\
-				<th>Strike Price</th>\
-				<th>Action</th>\
-				<th>Instrument Price</th>\
-				<th>Quantity</th>\
-				<th>Delete</th>\
-				</tr>\
-				</thead>\
-				<tbody>' +
-				rowDiv +
-				'</tbody>\
-				</table>';
+			class="table table-bordered table-condensed table-striped insTable">\
+			<thead>\
+			<tr class="info">\
+			<th>No.</th>\
+			<th>Active</th>\
+			<th>Instrument</th>\
+			<th>Type</th>\
+			<th>Strike Price</th>\
+			<th>Action</th>\
+			<th>Instrument Price</th>\
+			<th>Quantity</th>\
+			<th>Delete</th>\
+			</tr>\
+			</thead>\
+			<tbody>' +
+			rowDiv +
+			'</tbody>\
+			</table>';
 			//console.log('table DIV is ' + tableDiv);
 			$('#ref-' + panelId).append(tableDiv);
 		},
@@ -200,7 +235,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 						itemIndex--;
 					if(legendArray.length > 1)
 						graphArray[itemIndex+1].push({ x: h3, y: parseFloat(grandTotal.toFixed(2))});
-	
+
 					valueArray.push(rowArray);
 				}
 			}
@@ -223,7 +258,7 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 					headDiv += '<th class="text-center">' + headerArray[k] + '</th>';
 			}
 			headDiv += '</tr>'
-			var rowDiv = '';
+				var rowDiv = '';
 			for(var m=0; m < valueArray.length; m++) {
 				var cellDiv = '';
 				var lineArray = valueArray[m];
@@ -250,15 +285,15 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 			var dataSetArray = [];
 			for(var k=0; k < legendArray.length && k < 10; k++) {	
 				dataSetArray.push({
-						label: legendArray[k],
-						lineTension: 0.2,
-						data: graphArray[k],
-						borderColor: colorArray[k],
-						backgroundColor: colorArray[k],
-						fill: false,
-						pointBackgroundColor: colorArray[k],
-						pointRadius: 0
-					});
+					label: legendArray[k],
+					lineTension: 0.2,
+					data: graphArray[k],
+					borderColor: colorArray[k],
+					backgroundColor: colorArray[k],
+					fill: false,
+					pointBackgroundColor: colorArray[k],
+					pointRadius: 0
+				});
 				if(legendArray[k] != 'Total')
 					dataSetArray[k].borderWidth = '1px';
 
@@ -314,4 +349,5 @@ define('InstrumentTable',['StoreArray','FOInstrumentStore','FOInstrument','chart
 			$('#chart').data('chart',myChart);
 		}
 	};
+	return self;
 });
